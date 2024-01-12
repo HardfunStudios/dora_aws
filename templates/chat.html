@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-alpha1/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static',filename='styles/'+value+'.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/showdown@2.1.0/dist/showdown.min.js"></script>
+
+</head>
+
+<body>
+    <div id="chat-bubble">
+        <img src="{{ url_for('static',filename='images/bubble.svg') }}" alt="">
+    </div>
+    <div id="chat-window">
+        <div class="chat-header">
+            <p class="title">Fale com a Dora</p>
+            <p class="subtitle">A atendente virtual do Escolas Conectadas</p>
+        </div>
+        <div class="px-2 scroll">
+
+        </div>
+        <nav class="navbar bg-white navbar-expand-sm d-flex justify-content-between">
+            <input type="text number" name="text" class="form-control" placeholder="Digite uma mensagem..."
+                id="chat-input">
+        </nav>
+    </div>
+
+    <script>
+
+        function add_loading_message_dora() {
+            let bubble = '<div class="d-flex align-items-center loading-bubble">'
+            bubble += `<div class="text-left pr-1 avatar"><img src="{{ url_for('static',filename='images/dora-'+value+'.png') }}" class="dora"/></div>`
+            bubble += '<div class="pr-2 pl-1"> <span class="name">Dora</span>'
+            bubble += `<div class="msg"><div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div></div>`
+            bubble += '</div>'
+            bubble += '</div>'
+            const scroll = document.querySelector('.scroll');
+            scroll.innerHTML += bubble
+            scroll.scrollTop = scroll.scrollHeight;
+        }
+
+        function add_message_dora(message) {
+            let bubble = '<div class="d-flex align-items-center">'
+            bubble += `<div class="text-left pr-1 avatar"><img src="{{ url_for('static',filename='images/dora-'+value+'.png') }}" class="dora"/></div>`
+            bubble += '<div class="pr-2 pl-1"> <span class="name">Dora</span>'
+            bubble += `<div class="msg">${message}</div>`
+            bubble += '</div>'
+            bubble += '</div>'
+            const scroll = document.querySelector('.scroll');
+            scroll.innerHTML += bubble
+            scroll.scrollTop = scroll.scrollHeight;
+        }
+
+        function add_message_user(message) {
+            let bubble = '<div class="d-flex align-items-center text-right justify-content-end">'
+            bubble += '<div class="pr-2"> <span class="name">Você</span>'
+            bubble += `<p class="msg">${message}</p>`
+            bubble += '</div>'
+            bubble += `<div class="avatar"><img src="{{ url_for('static',filename='images/user.png') }}"/></div>`
+            bubble += '</div>'
+            const scroll = document.querySelector('.scroll');
+            scroll.innerHTML += bubble
+            scroll.scrollTop = scroll.scrollHeight;
+        }
+
+        function remove_source(message) {
+            let pos1 = message.indexOf("【");
+            if (pos1 >= 0) {
+                let pos2 = message.indexOf("】");
+                let part1 = message.slice(0, pos1);
+                let part2 = message.slice(pos2 + 1);
+                return part1 + part2;
+            } else {
+                return message;
+            }
+
+        }
+        let isOpen = false;
+        function toggleChat() {
+            isOpen = !isOpen;
+            document.querySelector('#chat-window').style.display = isOpen ? "block" : "none";
+        }
+        document.addEventListener("DOMContentLoaded", function () {
+            const session_id = Math.random().toString(36).substring(7);
+            const converter = new showdown.Converter({ tables: true });
+            add_message_dora("Olá, eu sou a Dora, a atendente virtual do Escolas Conectadas. Como posso te ajudar?")
+            document.querySelector("#chat-bubble").addEventListener('click', function (event) {
+                toggleChat();
+            });
+            document.querySelector("#chat-input").addEventListener('keyup', function (event) {
+                if (event.keyCode === 13) {
+                    let message = document.querySelector("#chat-input").value
+                    add_message_user(message)
+                    add_loading_message_dora()
+
+
+                    let url = "{{env['APP_URL']}}/get";
+                    let data = { msg: message, session_id: session_id };
+
+                    fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(data),
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            document.querySelector('.loading-bubble').remove();
+                            add_message_dora(converter.makeHtml(remove_source(data['msg'])));
+                        })
+                        .catch((error) => console.error('Error:', error));
+
+                    document.querySelector("#chat-input").value = ""
+                }
+            });
+        });
+
+    </script>
+</body>
+
+</html>

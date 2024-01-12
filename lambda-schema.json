@@ -1,0 +1,61 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Moodle User Data API",
+    "version": "1.0.0",
+    "description": "APIs for managing insurance claims by pulling a list of open claims, identifying outstanding paperwork for each claim, and sending reminders to policy holders."
+  },
+  "paths": {
+    "/grades": {
+      "post": {
+        "summary": "Get a list of all grades",
+        "description": "Get the list of all final grades of a user. Requires the user CPF. Returns the course names and grades.",
+        "operationId": "getGrades",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "type": "string",
+                    "description": "User CPF. Required parameter."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Get a list of all grades",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "course_name": {
+                        "type": "string",
+                        "description": "Name of the course"
+                      },
+                      "grade": {
+                        "type": "number",
+                        "description": "Final grade of the user in the course"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found."
+          }
+        }
+      }
+    }
+  }
+}
