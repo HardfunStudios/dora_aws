@@ -1,6 +1,7 @@
 :root {
   --primary-color: #980098;
   --secondary-color: #E25C32;
+  background-color: transparent;
 }
 
 #chat-window {
