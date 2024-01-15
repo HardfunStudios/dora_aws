@@ -4,7 +4,9 @@ from flask import Flask, render_template, request
 
 client = boto3.client(
     service_name='bedrock-agent-runtime',
-    region_name='us-east-1'
+    region_name='us-east-1',
+    aws_access_key_id=os.environ['ACCESS_KEY'],
+    aws_secret_access_key=os.environ['SECRET_KEY']
 )
 
 def send_message(prompt, session_id):
@@ -27,7 +29,7 @@ app = Flask(__name__)
 
 @app.route("/")
 def home():    
-    return render_template("chat.html", env=os.environ, value="purple")
+    return render_template("chat.html", env=os.environ, value=os.environ['THEME'])
 
 @app.route("/get", methods = ['POST'])
 def get_response():
