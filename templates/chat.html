@@ -9,10 +9,11 @@
     <link rel="stylesheet" href="{{ url_for('static',filename='styles/'+value+'.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/showdown@2.1.0/dist/showdown.min.js"></script>
-
+    <script type="text/javascript" src = 'https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/4.2.11/iframeResizer.contentWindow.min.js' ></script>
 </head>
 
 <body>
+    <div data-iframe-height> &nbsp; </div> 
     <div id="chat-bubble">
         <img src="{{ url_for('static',filename='images/bubble.svg') }}" alt="">
     </div>
