@@ -3,14 +3,14 @@
   "info": {
     "title": "Moodle User Data API",
     "version": "1.0.0",
-    "description": "APIs for managing insurance claims by pulling a list of open claims, identifying outstanding paperwork for each claim, and sending reminders to policy holders."
+    "description": "This is a simple API to get user data from Moodle WebServices."
   },
   "paths": {
     "/grades": {
       "post": {
         "summary": "Get a list of all grades",
-        "description": "Get the list of all final grades of a user. Requires the user CPF. Returns the course names and grades.",
-        "operationId": "getGrades",
+        "description": "Get the list of all final grades of a user. Requires the username. Returns the course names and grades.",
+        "operationId": "Get Grades",
         "requestBody": {
           "required": true,
           "content": {
@@ -20,7 +20,7 @@
                 "properties": {
                   "username": {
                     "type": "string",
-                    "description": "User CPF. Required parameter."
+                    "description": "Username. Required parameter."
                   }
                 }
               }

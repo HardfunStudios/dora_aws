@@ -1,6 +1,7 @@
 import boto3
 import os
 from flask import Flask, render_template, request
+from flask_cors import CORS
 
 client = boto3.client(
     service_name='bedrock-agent-runtime',
@@ -26,6 +27,7 @@ def send_message(prompt, session_id):
   return completion
   
 app = Flask(__name__)
+CORS(app)
 
 @app.route("/")
 def home():    
