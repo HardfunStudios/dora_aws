@@ -24,7 +24,7 @@ def send_message(prompt, session_id):
       chunk = event["chunk"]
       completion += chunk["bytes"].decode()
 
-  return completion
+  return completion    
   
 app = Flask(__name__)
 CORS(app)
@@ -37,7 +37,9 @@ def home():
 def get_response():
     session_id = request.json['session_id']
     message = request.json['msg']
-    msg = send_message(message, session_id)
+    username = request.json['username']
+    prompt = message + ". My username is " + username + "."
+    msg = send_message(prompt, session_id)
     response = {'msg': msg}
     return response, 200
 
