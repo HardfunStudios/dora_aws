@@ -39,7 +39,7 @@ def get_response():
     message = request.json['msg']
     username = request.json['username']
     firstname = request.json['firstname']
-    roles = request.json['role']
+    roles = request.json['roles']
     
     locale = request.json['locale']
     contexts = {
