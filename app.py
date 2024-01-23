@@ -124,8 +124,7 @@ def get_response():
     
     locale = request.json['locale']
     
-    print(ROLE_NAMES[locale])
-    roles = [ROLE_NAMES[locale][role] for role in roles]
+    #roles = [ROLE_NAMES[locale][role] for role in roles]
     
     
     roles_string = ', '.join(roles)
