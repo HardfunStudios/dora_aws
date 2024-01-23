@@ -6,19 +6,19 @@ from flask_cors import CORS
 CONTEXTS = {
     "en": {
         "not-logged": ". Consider that I am not logged in.",
-        "logged": ". Consider that my roles in the Profuturo platform are {}, my username is {} and my first name is {}."
+        "logged": ". Consider that my roles in the Profuturo platform are {}, I'm logged in, my username is {} and my first name is {}."
     },
     "es": {
         "not-logged": ". Considera que no estoy conectado.",
-        "logged": ". Considera que mis roles en la plataforma Profuturo son {}, mi nombre de usuario es {} y mi nombre es {}."
+        "logged": ". Considera que mis roles en la plataforma Profuturo son {}, estoy conectado, mi nombre de usuario es {} y mi nombre es {}."
     },
     "pt_br": {
         "not-logged": ". Considere que não estou conectado.",
-        "logged": ". Considere que meus papéis na plataforma Profuturo são {}, meu nome de usuário é {} e meu nome é {}."
+        "logged": ". Considere que meus papéis na plataforma Profuturo são {}, estou conectado, meu nome de usuário é {} e meu primeiro nome é {}."
     },
     "fr": {
         "not-logged": ". Considérez que je ne suis pas connecté.",
-        "logged": ". Considérez que mes rôles dans la plateforme Profuturo sont {}, mon nom d'utilisateur est {} et mon prénom est {}."
+        "logged": ". Considérez que mes rôles dans la plateforme Profuturo sont {}, je suis connecté, mon nom d'utilisateur est {} et mon prénom est {}."
     },
 }
 
