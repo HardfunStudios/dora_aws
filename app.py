@@ -39,10 +39,91 @@ def get_response():
     message = request.json['msg']
     username = request.json['username']
     firstname = request.json['firstname']
+    roles = request.json['role']
+    
+    locale = request.json['locale']
+    contexts = {
+        "en": {
+            "not-logged": ". Consider that I am not logged in.",
+            "logged": ". Consider that my roles in the Profuturo platform are {}, my username is {} and my first name is {}."
+        },
+        "es": {
+            "not-logged": ". Considera que no estoy conectado.",
+            "logged": ". Considera que mis roles en la plataforma Profuturo son {}, mi nombre de usuario es {} y mi nombre es {}."
+        },
+        "pt": {
+            "not-logged": ". Considere que não estou conectado.",
+            "logged": ". Considere que meus papéis na plataforma Profuturo são {}, meu nome de usuário é {} e meu nome é {}."
+        },
+        "fr": {
+            "not-logged": ". Considérez que je ne suis pas connecté.",
+            "logged": ". Considérez que mes rôles dans la plateforme Profuturo sont {}, mon nom d'utilisateur est {} et mon prénom est {}."
+        },
+    }
+    role_names = {
+        "en": {
+            "manager": "Manager",
+            "coursecreator": "Course creator",
+            "editingteacher": "Teacher",
+            "teacher": "Non-editing teacher",
+            "student": "Student",
+            "guest": "Guest",
+            "user": "Authenticated user",
+            "frontpage": "Authenticated user on frontpage",
+            "pfstudent": "Profuturo Student",
+            "pfteacher": "Profuturo Teacher",
+            "pfcoach": "Profuturo Coach",
+            "countrycoordinator": "Country Coordinator"
+            },
+        "es": {
+            "manager": "Administrador",
+            "coursecreator": "Creador de cursos",
+            "editingteacher": "Profesor",
+            "teacher": "Profesor sin permisos de edición",
+            "student": "Estudiante",
+            "guest": "Invitado",
+            "user": "Usuario autenticado",
+            "frontpage": "Usuario autenticado en la página de inicio",
+            "pfstudent": "Estudiante Profuturo",
+            "pfteacher": "Profesor Profuturo",
+            "pfcoach": "Coach Profuturo",
+            "countrycoordinator": "Coordinador de país"
+            },  
+        "pt": {
+            "manager": "Gerente",
+            "coursecreator": "Criador de cursos",
+            "editingteacher": "Professor",
+            "teacher": "Professor sem permissões de edição",
+            "student": "Estudante",
+            "guest": "Convidado",
+            "user": "Usuário autenticado",
+            "frontpage": "Usuário autenticado na página inicial",
+            "pfstudent": "Estudante Profuturo",
+            "pfteacher": "Professor Profuturo",
+            "pfcoach": "Coach Profuturo",
+            "countrycoordinator": "Coordenador de país"
+            },
+        "fr": {
+            "manager": "Administrateur",
+            "coursecreator": "Créateur de cours",
+            "editingteacher": "Professeur",
+            "teacher": "Professeur sans autorisation d'édition",
+            "student": "Étudiant",
+            "guest": "Invité",
+            "user": "Utilisateur authentifié",
+            "frontpage": "Utilisateur authentifié sur la page d'accueil",
+            "pfstudent": "Étudiant Profuturo",
+            "pfteacher": "Professeur Profuturo",
+            "pfcoach": "Coach Profuturo",
+            "countrycoordinator": "Coordinateur de pays"
+            }
+    }
+    roles = [role_names[locale][role] for role in roles]
+    roles_string = ', '.join(roles)
     if(username == ""):
-        prompt = message + ". I am not logged in."
+        prompt = message + contexts[locale]["not-logged"]
     else:
-        prompt = message + ". My username is " + username + ". My first name is " + firstname + "."
+        prompt = message + contexts[locale]["logged"].format(roles_string, username, firstname)
     msg = send_message(prompt, session_id)
     response = {'msg': msg}
     return response, 200
