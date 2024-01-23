@@ -62,6 +62,7 @@ def get_response():
     }
     role_names = {
         "en": {
+            "admin": "Administrator",
             "manager": "Manager",
             "coursecreator": "Course creator",
             "editingteacher": "Teacher",
@@ -76,6 +77,7 @@ def get_response():
             "countrycoordinator": "Country Coordinator"
             },
         "es": {
+            "admin": "Administrador",
             "manager": "Administrador",
             "coursecreator": "Creador de cursos",
             "editingteacher": "Profesor",
@@ -89,7 +91,8 @@ def get_response():
             "pfcoach": "Coach Profuturo",
             "countrycoordinator": "Coordinador de país"
             },  
-        "pt": {
+        "pt_br": {
+            "admin": "Administrador",
             "manager": "Gerente",
             "coursecreator": "Criador de cursos",
             "editingteacher": "Professor",
@@ -104,6 +107,7 @@ def get_response():
             "countrycoordinator": "Coordenador de país"
             },
         "fr": {
+            "admin": "Administrateur",
             "manager": "Administrateur",
             "coursecreator": "Créateur de cours",
             "editingteacher": "Professeur",
