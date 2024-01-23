@@ -9,7 +9,7 @@
     "/events": {
       "post": {
         "summary": "Get a list of all events",
-        "description": "Get the list of all events (assignments) of a user. Requires the username. Returns the events' name, date, link and course.",
+        "description": "Get the list of all events (assignments) of a user. Requires the user to be logged in. Requires the username. Returns the events' name, date, link and course.",
         "operationId": "Get Events",
         "requestBody": {
           "required": true,
