@@ -51,7 +51,7 @@ def get_response():
             "not-logged": ". Considera que no estoy conectado.",
             "logged": ". Considera que mis roles en la plataforma Profuturo son {}, mi nombre de usuario es {} y mi nombre es {}."
         },
-        "pt": {
+        "pt_br": {
             "not-logged": ". Considere que não estou conectado.",
             "logged": ". Considere que meus papéis na plataforma Profuturo são {}, meu nome de usuário é {} e meu nome é {}."
         },
