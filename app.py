@@ -38,10 +38,11 @@ def get_response():
     session_id = request.json['session_id']
     message = request.json['msg']
     username = request.json['username']
+    firstname = request.json['firstname']
     if(username == ""):
         prompt = message + ". I am not logged in."
     else:
-        prompt = message + ". My username is " + username + "."
+        prompt = message + ". My username is " + username + ". My first name is " + firstname + "."
     msg = send_message(prompt, session_id)
     response = {'msg': msg}
     return response, 200
