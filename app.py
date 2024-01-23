@@ -2,13 +2,88 @@ import boto3
 import os
 from flask import Flask, render_template, request
 from flask_cors import CORS
+ 
+CONTEXTS = {
+    "en": {
+        "not-logged": ". Consider that I am not logged in.",
+        "logged": ". Consider that my roles in the Profuturo platform are {}, my username is {} and my first name is {}."
+    },
+    "es": {
+        "not-logged": ". Considera que no estoy conectado.",
+        "logged": ". Considera que mis roles en la plataforma Profuturo son {}, mi nombre de usuario es {} y mi nombre es {}."
+    },
+    "pt_br": {
+        "not-logged": ". Considere que não estou conectado.",
+        "logged": ". Considere que meus papéis na plataforma Profuturo são {}, meu nome de usuário é {} e meu nome é {}."
+    },
+    "fr": {
+        "not-logged": ". Considérez que je ne suis pas connecté.",
+        "logged": ". Considérez que mes rôles dans la plateforme Profuturo sont {}, mon nom d'utilisateur est {} et mon prénom est {}."
+    },
+}
 
-client = boto3.client(
-    service_name='bedrock-agent-runtime',
-    region_name='us-east-1',
-    aws_access_key_id=os.environ['ACCESS_KEY'],
-    aws_secret_access_key=os.environ['SECRET_KEY']
-)
+ROLE_NAMES = {
+    "en": {
+        "admin": "Administrator",
+        "manager": "Manager",
+        "coursecreator": "Course creator",
+        "editingteacher": "Teacher",
+        "teacher": "Non-editing teacher",
+        "student": "Student",
+        "guest": "Guest",
+        "user": "Authenticated user",
+        "frontpage": "Authenticated user on frontpage",
+        "pfstudent": "Profuturo Student",
+        "pfteacher": "Profuturo Teacher",
+        "pfcoach": "Profuturo Coach",
+        "countrycoordinator": "Country Coordinator"
+        },
+    "es": {
+        "admin": "Administrador",
+        "manager": "Administrador",
+        "coursecreator": "Creador de cursos",
+        "editingteacher": "Profesor",
+        "teacher": "Profesor sin permisos de edición",
+        "student": "Estudiante",
+        "guest": "Invitado",
+        "user": "Usuario autenticado",
+        "frontpage": "Usuario autenticado en la página de inicio",
+        "pfstudent": "Estudiante Profuturo",
+        "pfteacher": "Profesor Profuturo",
+        "pfcoach": "Coach Profuturo",
+        "countrycoordinator": "Coordinador de país"
+        },  
+    "pt_br": {
+        "admin": "Administrador",
+        "manager": "Gerente",
+        "coursecreator": "Criador de cursos",
+        "editingteacher": "Professor",
+        "teacher": "Professor sem permissões de edição",
+        "student": "Estudante",
+        "guest": "Convidado",
+        "user": "Usuário autenticado",
+        "frontpage": "Usuário autenticado na página inicial",
+        "pfstudent": "Estudante Profuturo",
+        "pfteacher": "Professor Profuturo",
+        "pfcoach": "Coach Profuturo",
+        "countrycoordinator": "Coordenador de país"
+        },
+    "fr": {
+        "admin": "Administrateur",
+        "manager": "Administrateur",
+        "coursecreator": "Créateur de cours",
+        "editingteacher": "Professeur",
+        "teacher": "Professeur sans autorisation d'édition",
+        "student": "Étudiant",
+        "guest": "Invité",
+        "user": "Utilisateur authentifié",
+        "frontpage": "Utilisateur authentifié sur la page d'accueil",
+        "pfstudent": "Étudiant Profuturo",
+        "pfteacher": "Professeur Profuturo",
+        "pfcoach": "Coach Profuturo",
+        "countrycoordinator": "Coordinateur de pays"
+        }
+}  
 
 def send_message(prompt, session_id):
   response = client.invoke_agent(
@@ -24,8 +99,14 @@ def send_message(prompt, session_id):
       chunk = event["chunk"]
       completion += chunk["bytes"].decode()
 
-  return completion    
-  
+  return completion   
+
+client = boto3.client(
+    service_name='bedrock-agent-runtime',
+    region_name='us-east-1',
+    aws_access_key_id=os.environ['ACCESS_KEY'],
+    aws_secret_access_key=os.environ['SECRET_KEY']
+)
 app = Flask(__name__)
 CORS(app)
 
@@ -42,92 +123,13 @@ def get_response():
     roles = request.json['roles']
     
     locale = request.json['locale']
-    contexts = {
-        "en": {
-            "not-logged": ". Consider that I am not logged in.",
-            "logged": ". Consider that my roles in the Profuturo platform are {}, my username is {} and my first name is {}."
-        },
-        "es": {
-            "not-logged": ". Considera que no estoy conectado.",
-            "logged": ". Considera que mis roles en la plataforma Profuturo son {}, mi nombre de usuario es {} y mi nombre es {}."
-        },
-        "pt_br": {
-            "not-logged": ". Considere que não estou conectado.",
-            "logged": ". Considere que meus papéis na plataforma Profuturo são {}, meu nome de usuário é {} e meu nome é {}."
-        },
-        "fr": {
-            "not-logged": ". Considérez que je ne suis pas connecté.",
-            "logged": ". Considérez que mes rôles dans la plateforme Profuturo sont {}, mon nom d'utilisateur est {} et mon prénom est {}."
-        },
-    }
-    role_names = {
-        "en": {
-            "admin": "Administrator",
-            "manager": "Manager",
-            "coursecreator": "Course creator",
-            "editingteacher": "Teacher",
-            "teacher": "Non-editing teacher",
-            "student": "Student",
-            "guest": "Guest",
-            "user": "Authenticated user",
-            "frontpage": "Authenticated user on frontpage",
-            "pfstudent": "Profuturo Student",
-            "pfteacher": "Profuturo Teacher",
-            "pfcoach": "Profuturo Coach",
-            "countrycoordinator": "Country Coordinator"
-            },
-        "es": {
-            "admin": "Administrador",
-            "manager": "Administrador",
-            "coursecreator": "Creador de cursos",
-            "editingteacher": "Profesor",
-            "teacher": "Profesor sin permisos de edición",
-            "student": "Estudiante",
-            "guest": "Invitado",
-            "user": "Usuario autenticado",
-            "frontpage": "Usuario autenticado en la página de inicio",
-            "pfstudent": "Estudiante Profuturo",
-            "pfteacher": "Profesor Profuturo",
-            "pfcoach": "Coach Profuturo",
-            "countrycoordinator": "Coordinador de país"
-            },  
-        "pt_br": {
-            "admin": "Administrador",
-            "manager": "Gerente",
-            "coursecreator": "Criador de cursos",
-            "editingteacher": "Professor",
-            "teacher": "Professor sem permissões de edição",
-            "student": "Estudante",
-            "guest": "Convidado",
-            "user": "Usuário autenticado",
-            "frontpage": "Usuário autenticado na página inicial",
-            "pfstudent": "Estudante Profuturo",
-            "pfteacher": "Professor Profuturo",
-            "pfcoach": "Coach Profuturo",
-            "countrycoordinator": "Coordenador de país"
-            },
-        "fr": {
-            "admin": "Administrateur",
-            "manager": "Administrateur",
-            "coursecreator": "Créateur de cours",
-            "editingteacher": "Professeur",
-            "teacher": "Professeur sans autorisation d'édition",
-            "student": "Étudiant",
-            "guest": "Invité",
-            "user": "Utilisateur authentifié",
-            "frontpage": "Utilisateur authentifié sur la page d'accueil",
-            "pfstudent": "Étudiant Profuturo",
-            "pfteacher": "Professeur Profuturo",
-            "pfcoach": "Coach Profuturo",
-            "countrycoordinator": "Coordinateur de pays"
-            }
-    }
-    roles = [role_names[locale][role] for role in roles]
+    
+    roles = [ROLE_NAMES[locale][role] for role in roles]
     roles_string = ', '.join(roles)
     if(username == ""):
-        prompt = message + contexts[locale]["not-logged"]
+        prompt = message + CONTEXTS[locale]["not-logged"]
     else:
-        prompt = message + contexts[locale]["logged"].format(roles_string, username, firstname)
+        prompt = message + CONTEXTS[locale]["logged"].format(roles_string, username, firstname)
     msg = send_message(prompt, session_id)
     response = {'msg': msg}
     return response, 200
