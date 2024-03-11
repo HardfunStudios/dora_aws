@@ -135,6 +135,9 @@ def get_response():
         prompt = message + CONTEXTS[locale]["not-logged"]
     else:
         prompt = message + CONTEXTS[locale]["logged"].format(roles_string, username, firstname)
+    
+    print(prompt)
+    
     msg = send_message(prompt, session_id)
     response = {'msg': msg}
     return response, 200
