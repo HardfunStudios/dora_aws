@@ -22,6 +22,13 @@ CONTEXTS = {
     },
 }
 
+COURSE = {
+    "en": "Consider that I am enrolled in the courses {}.",
+    "es": "Considera que estoy inscrito en los cursos {}.",
+    "pt_br": "Considere que estou matriculado nos cursos {}.",
+    "fr": "Considérez que je suis inscrit aux cours {}."
+}
+
 ROLE_NAMES = {
     "en": {
         "admin": "Administrator",
@@ -127,6 +134,7 @@ def get_response():
     roles = request.json['roles']
     
     locale = request.json['locale']
+    courses = request.json['courses']
     
     #roles = [ROLE_NAMES[locale][role] for role in roles]
     
@@ -135,6 +143,9 @@ def get_response():
         prompt = message + CONTEXTS[locale]["not-logged"]
     else:
         prompt = message + CONTEXTS[locale]["logged"].format(roles_string, username, firstname)
+    
+    courses_string = ', '.join(courses_string)
+    prompt = prompt + COURSE[locale].format(courses_string)
     
     print(prompt)
     
