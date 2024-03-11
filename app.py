@@ -144,7 +144,7 @@ def get_response():
     else:
         prompt = message + CONTEXTS[locale]["logged"].format(roles_string, username, firstname)
     
-    courses_string = ', '.join(courses_string)
+    courses_string = ', '.join(courses)
     prompt = prompt + COURSE[locale].format(courses_string)
     
     print(prompt)
