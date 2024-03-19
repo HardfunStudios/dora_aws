@@ -160,7 +160,7 @@ class CourseBot:
     
     def create_data_source(self):
         response = self.bedrock_agent.create_data_source(
-            knowledgeBaseId=,
+            knowledgeBaseId='',
             name=f"course-{self.course_id}",
             description=f"course-{self.course_id}",
             dataSourceConfiguration={
