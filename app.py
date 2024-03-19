@@ -7,7 +7,7 @@ from course_bot import CourseBot
 bot_client = BotClient()
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, origins=['https://moodlefte.hardfunstudios.com'])
 
 @app.route("/")
 def home():    
