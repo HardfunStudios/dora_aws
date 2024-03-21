@@ -38,4 +38,4 @@ class BotClient:
             chunk = event["chunk"]
             completion += chunk["bytes"].decode()
 
-        return completion
+        return response
