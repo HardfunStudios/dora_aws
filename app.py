@@ -50,6 +50,7 @@ def get_response():
     prompt_attributes = request.json['prompt_attributes']
     agent_settings = request.json['agent_settings']
     
+    bot_client = BotClient()
     response_text = bot_client.send_message(
         prompt=message, 
         session_id=session_id, 
