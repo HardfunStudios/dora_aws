@@ -14,12 +14,12 @@ class BotClient:
         
         session_state = {
             "sessionAttributes": session_attributes,
-            "promptAttributes": prompt_attributes
+            "promptSessionAttributes": prompt_attributes
         }
         
         response = self.client.invoke_agent(
             agentId=agent_settings.get('agentid', os.environ['AGENT_ID']),
-            agentAliasId=agent_settings.get('agentid', os.environ['AGENT_ALIAS_ID']),
+            agentAliasId=agent_settings.get('agentaliasid', os.environ['AGENT_ALIAS_ID']),
             sessionId=session_id,
             inputText=prompt,
             sessionState=session_state
