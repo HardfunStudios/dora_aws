@@ -60,4 +60,4 @@ if __name__ == "__main__":
     from waitress import serve
     import os
     print(os.environ['APP_HOST'])
-    serve(app, host="0.0.0.0", port="5001")
+    serve(app, host="0.0.0.0", port="8000")
