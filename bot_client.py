@@ -26,8 +26,8 @@ class BotClient:
         }
         
         response = self.client.invoke_agent(
-            agentId=agent_settings.get('agentid', os.environ['AGENT_ID']),
-            agentAliasId=agent_settings.get('agentaliasid', os.environ['AGENT_ALIAS_ID']),
+            agentId=agent_settings['agentid'],
+            agentAliasId=agent_settings['agentaliasid'],
             sessionId=session_id,
             inputText=prompt,
             sessionState=session_state
