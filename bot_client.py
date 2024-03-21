@@ -30,7 +30,8 @@ class BotClient:
             agentAliasId=agent_settings['agentaliasid'],
             sessionId=session_id,
             inputText=prompt,
-            sessionState=session_state
+            sessionState=session_state,
+            enableTrace=True
         )
 
         completion = ""
@@ -38,4 +39,4 @@ class BotClient:
             chunk = event["chunk"]
             completion += chunk["bytes"].decode()
 
-        return response.get("trace")
+        return response.get("trace").get
