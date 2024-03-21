@@ -48,11 +48,16 @@ def get_response():
     message = request.json['msg']
     session_attributes = request.json['session_attributes']
     prompt_attributes = request.json['prompt_attributes']
+    agent_settings = request.json['agent_settings']
     
-    print(session_attributes)
-    print(prompt_attributes)
+    response_text = bot_client.send_message(
+        prompt=message, 
+        session_id=session_id, 
+        session_attributes=session_attributes, 
+        prompt_attributes=prompt_attributes, 
+        agent_settings=agent_settings
+    )
     
-    response_text = bot_client.send_message(message, session_id, session_attributes, prompt_attributes)
     response = {'msg': response_text}
     return response, 200
 

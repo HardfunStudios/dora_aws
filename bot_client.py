@@ -10,7 +10,7 @@ class BotClient:
             aws_secret_access_key=os.environ['SECRET_KEY']
         )
 
-    def send_message(self, prompt, session_id, session_attributes, prompt_attributes):
+    def send_message(self, prompt, session_id, session_attributes, prompt_attributes, agent_settings):
         
         session_state = {
             "sessionAttributes": session_attributes,
@@ -18,8 +18,8 @@ class BotClient:
         }
         
         response = self.client.invoke_agent(
-            agentId=os.environ['AGENT_ID'],
-            agentAliasId=os.environ['AGENT_ALIAS_ID'],
+            agentId=agent_settings.get('agentid', os.environ['AGENT_ID']),
+            agentAliasId=agent_settings.get('agentid', os.environ['AGENT_ALIAS_ID']),
             sessionId=session_id,
             inputText=prompt,
             sessionState=session_state
