@@ -33,10 +33,9 @@ class BotClient:
             sessionState=session_state,
             enableTrace=True
         )
-
+        return response.get("trace").get
         completion = ""
         for event in response.get("completion"):
             chunk = event["chunk"]
             completion += chunk["bytes"].decode()
 
-        return response.get("trace").get
