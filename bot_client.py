@@ -33,7 +33,7 @@ class BotClient:
             sessionState=session_state,
             enableTrace=True
         )
-        return response.get("trace").get
+        return response
         completion = ""
         for event in response.get("completion"):
             chunk = event["chunk"]
