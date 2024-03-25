@@ -31,9 +31,8 @@ class BotClient:
             sessionId=session_id,
             inputText=prompt,
             sessionState=session_state,
-            enableTrace=True
         )
-        return response.get("completion")[0].keys()
+        #return response.get("completion")[0].keys()
         completion = ""
         for event in response.get("completion"):
             chunk = event["chunk"]
