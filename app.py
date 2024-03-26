@@ -69,8 +69,10 @@ def create_course():
 def sync_content():
     course_id = request.json['course_id']
     course_content = request.json['course_content']
+    agent_id = request.json['agent_id']
     try:
         response = sync_client.create_course_knowledge_base(course_id=course_id, course_content=course_content)
+        bot_client._prepare_agent(agent_id=agent_id)
         return response, 200
     except Exception as e:
         return str(e), 500

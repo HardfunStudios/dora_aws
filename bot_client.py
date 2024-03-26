@@ -173,10 +173,11 @@ class BotClient:
     
     
 
-    def _prepare_agent(self):
+    def _prepare_agent(self, agent_id = None):
         print("Preparing the agent...")
 
-        agent_id = self.agent["agentId"]
+        if not agent_id:
+            agent_id = self.agent["agentId"]
         prepared_agent_details = self.bedrock_wrapper.prepare_agent(agent_id)
         self._wait_for_agent_status(agent_id, "PREPARED")
 
