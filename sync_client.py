@@ -54,16 +54,7 @@ class SyncClient:
     
     def to_dict(self): 
         return {
-            "course_id": self.course_id,
             "bucket_name": self.bucket_name,
-            "vector_store_host": self.vector_store_host,
-            "collection": self.collection,
-            "encryption_policy": self.encryption_policy,
-            "network_policy": self.network_policy,
-            "access_policy": self.access_policy,
-            "bedrock_kb_execution_role_arn": self.bedrock_kb_execution_role_arn,
-            "kb": self.kb,
-            
             "dataSourceId": self.ds['dataSourceId'],
             "knowledgeBaseId": self.kb['knowledgeBaseId'],
             "index_name": self.index_name,
