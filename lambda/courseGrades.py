@@ -1,5 +1,5 @@
-import sys
 import requests
+import sys
 import os 
 
 sys.path.insert(0, './lib')
@@ -12,18 +12,17 @@ def find_parameter_value(parameters, name):
       return parameter['value']
   return None
 
-
-def get_moodle_course_pending_activities(event, context):
+def get_moodle_course_grades(event, context):
   moodle_api.URL = os.environ.get('MOODLE_URL')
   moodle_api.KEY = os.environ.get('MOODLE_WS_KEY')
   
   properties = event['requestBody']["content"]["application/json"]["properties"]
-  courseid = int(find_parameter_value(properties, 'courseid'))
-  userid = int(find_parameter_value(properties, 'userid'))
+  
+  courseid = find_parameter_value(properties, 'courseid')
+  userid = find_parameter_value(properties, 'userid')
 
-  activities = moodle_api.call('local_chatbot_dora_get_user_pending_activities_for_course', courseid=courseid, userid=userid)
-
-  response_body = activities
+  grades = moodle_api.call('local_chatbot_dora_get_user_grade_for_course', courseid=courseid, userid=userid)
+  response_body = grades
   status_code = 200
   
   action_response = {

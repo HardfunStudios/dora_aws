@@ -1,0 +1,58 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Moodle Course Grades",
+    "version": "1.0.0",
+    "description": "This is a simple Moodle API client to get user data from Moodle WebServices."
+  },
+  "paths": {
+    "/course-grades": {
+      "post": {
+        "summary": "Get the user final grande on a course",
+        "description": "Get the user final grande on a course. Requires the user to be logged in. Requires the course id adn user id. Returns the user grade.",
+        "operationId": "Get course grades",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "courseid": {
+                    "type": "string",
+                    "description": "Course id. Required parameter."
+                  },
+                  "userid": {
+                    "type": "string",
+                    "description": "User id. Required parameter."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Get a list of all pending activities of a user on a course",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "grade": {
+                      "type": "number",
+                      "description": "Final grade of the user in the course"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found."
+          }
+        }
+      }
+    }
+  }
+}

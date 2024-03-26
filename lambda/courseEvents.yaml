@@ -1,0 +1,45 @@
+---
+openapi: 3.0.0
+info:
+  title: Moodle Course Pending Activities
+  version: 1.0.0
+  description: This is a simple Moodle API client to get user data from Moodle WebServices.
+paths:
+  "/pending-activities":
+    post:
+      summary: Get a list of all pending activities of a user on a course
+      description: Get the list of all pending activities of a user on a course. Requires
+        the user to be logged in. Requires the course id and user id. Returns the
+        activities titles, types, due dates and urls.
+      operationId: Get pending activities
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                courseid:
+                  type: string
+                  description: Course id. Required parameter.
+                userid:
+                  type: string
+                  description: User id. Required parameter.
+      responses:
+        '200':
+          description: Get a list of all pending activities of a user on a course
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: number
+                      description: Activity id
+                    grade:
+                      type: number
+                      description: Final grade of the user in the course
+        '404':
+          description: User not found.
