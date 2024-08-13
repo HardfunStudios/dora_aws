@@ -42,6 +42,9 @@ class BotClient:
         self.iam_client = iam_client
         self.postfix = postfix
 
+        self.lambda_roles = {}
+        self.lambda_functions = {}
+
         self.bedrock_wrapper = BedrockAgentWrapper(bedrock_agent_client)
         print(agent_data)    
         self.agent = self.bedrock_wrapper.get_agent(agent_id=agent_data['agent_id'])
