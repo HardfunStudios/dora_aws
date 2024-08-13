@@ -38,6 +38,7 @@ def home():
     
 @app.route("/sync", methods = ['POST'])
 def sync_content():
+    print(request.json)
     course_id = request.json['course_id']
     course_content = request.json['course_content']
     data = request.json['data']
