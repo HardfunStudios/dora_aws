@@ -44,7 +44,7 @@ def sync_content():
     data = request.json['data']
     metadata = request.json['metadata']
     agent_data = request.json['agent_data']
-    agent_id = agent_data['agent_id']
+    agent_id = agent_data.agent_id
 
     print(data)
     try:

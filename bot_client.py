@@ -43,15 +43,6 @@ class BotClient:
         self.postfix = postfix
 
         self.bedrock_wrapper = BedrockAgentWrapper(bedrock_agent_client)
-        self.agent = None
-        self.agent_alias = None
-        self.agent_role = None
-        self.prepared_agent_details = None
-        self.lambda_roles = {}
-        self.lambda_functions = {}
-        for function in LAMBDA_FUNCTIONS:
-            self.lambda_roles[function['name']] = None
-            self.lambda_functions[function['name']] = None
             
         self.agent = self.bedrock_wrapper.get_agent(agent_id=agent_data['agent_id'])
         self.agent_alias = self.bedrock_agent_client.get_agent_alias(agentId=agent_data['agent_id'], agentAliasId=agent_data['agent_alias'])["agentAlias"]
