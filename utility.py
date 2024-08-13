@@ -1,6 +1,5 @@
 import json
 import boto3
-
 class Utility:
     def __init__(self, suffix, boto3_session):
         self.suffix = suffix
@@ -87,6 +86,8 @@ class Utility:
             Description='Amazon Bedrock Knowledge Base Execution Role for accessing OSS and S3',
             MaxSessionDuration=3600
         )
+        
+        
 
         # fetch arn of the policies and role created above
         bedrock_kb_execution_role_arn = bedrock_kb_execution_role['Role']['Arn']
@@ -104,6 +105,8 @@ class Utility:
         )
         return bedrock_kb_execution_role
 
+    def get_execution_role(self):
+        return self.iam_client.get_role(RoleName=self.bedrock_execution_role_name)
 
     def create_oss_policy_attach_bedrock_execution_role(self, collection_id, bedrock_kb_execution_role):
         # define oss policy document
@@ -191,7 +194,13 @@ class Utility:
         )
         return encryption_policy, network_policy, access_policy
 
-
+    def get_policies(self):
+        return {
+            "fm_policy_arn": f"arn:aws:iam::{self.account_number}:policy/{self.fm_policy_name}",
+            "s3_policy_arn": f"arn:aws:iam::{self.account_number}:policy/{self.s3_policy_name}",
+            "oss_policy_arn": f"arn:aws:iam::{self.account_number}:policy/{self.oss_policy_name}"
+        }
+        
     def delete_iam_role_and_policies(self):
         fm_policy_arn = f"arn:aws:iam::{self.account_number}:policy/{self.fm_policy_name}"
         s3_policy_arn = f"arn:aws:iam::{self.account_number}:policy/{self.s3_policy_name}"

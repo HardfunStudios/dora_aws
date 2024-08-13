@@ -33,15 +33,16 @@ LAMBDA_FUNCTIONS = [
 
 class BotClient:
     def __init__(
-        self, bedrock_agent_client, runtime_client, lambda_client, iam_resource, postfix
+        self, bedrock_agent_client, runtime_client, lambda_client, iam_resource, iam_client, postfix, agent_data=None
     ):
         self.iam_resource = iam_resource
         self.lambda_client = lambda_client
         self.bedrock_agent_runtime_client = runtime_client
+        self.bedrock_agent_client = bedrock_agent_client
+        self.iam_client = iam_client
         self.postfix = postfix
 
         self.bedrock_wrapper = BedrockAgentWrapper(bedrock_agent_client)
-
         self.agent = None
         self.agent_alias = None
         self.agent_role = None
@@ -51,6 +52,15 @@ class BotClient:
         for function in LAMBDA_FUNCTIONS:
             self.lambda_roles[function['name']] = None
             self.lambda_functions[function['name']] = None
+            
+        if(agent_data):
+            self.agent = self.bedrock_wrapper.get_agent(agent_id=agent_data['agent_id'])
+            self.agent_alias = self.bedrock_agent_client.get_agent_alias(agentId=agent_data['agent_id'], agentAliasId=agent_data['agent_alias'])["agentAlias"]
+            self.agent_role = self.iam_client.get_role(RoleName=agent_data['agent_role'])
+            for function in LAMBDA_FUNCTIONS:
+                self.lambda_roles[function['name']] = self.iam_client.get_role(RoleName=agent_data['lambda']['roles'][function['name']])
+                self.lambda_functions[function['name']] = self.lambda_client.get_function(FunctionName=agent_data['lambda']['functions'][function['name']])
+                   
 
     def create_course_bot(self, course_id):
         name = f"course_bot_{course_id}"
@@ -92,9 +102,9 @@ class BotClient:
         
         print('passei')
         
-        return self.to_dict()
+        return self._to_dict()
     
-    def to_dict(self):
+    def _to_dict(self):
         response = {
             "agent_role": self.agent_role.role_name,
             "agent_id": self.agent["agentId"],
@@ -239,6 +249,7 @@ class BotClient:
                 PolicyArn="arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
             )
             print(f"Created role {role_name}")
+            self.exectution_role_arn = role
         except ClientError as e:
             logger.error(f"Couldn't create role {role_name}. Here's why: {e}")
             raise
@@ -356,18 +367,16 @@ class BotClient:
                 agent_alias_id = self.agent_alias["agentAliasId"]
                 print("Deleting agent alias...")
                 self.bedrock_wrapper.delete_agent_alias(agent_id, agent_alias_id)
+                self.agent_alias = None
 
             print("Deleting agent...")
             agent_status = self.bedrock_wrapper.delete_agent(agent_id)["agentStatus"]
             while agent_status == "DELETING":
                 time.sleep(5)
-                try:
-                    agent_status = self.bedrock_wrapper.get_agent(
-                        agent_id, log_error=False
-                    )["agentStatus"]
-                except ClientError as err:
-                    if err.response["Error"]["Code"] == "ResourceNotFoundException":
-                        agent_status = "DELETED"
+                agent_status = self.bedrock_wrapper.get_agent(
+                    agent_id, log_error=False
+                )["agentStatus"]
+            self.agent = None
 
         if self.lambda_functions:
             for function in self.lambda_functions:

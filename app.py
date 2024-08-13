@@ -8,9 +8,9 @@ import boto3
 import botocore
 
 config = botocore.config.Config(
-    read_timeout=900,
-    connect_timeout=900,
-    retries={"max_attempts": 0},
+    read_timeout=1000,
+    connect_timeout=1000,
+    retries={"max_attempts": 15},
     tcp_keepalive=True
 )
 
@@ -26,52 +26,55 @@ lambda_client = boto3_session.client('lambda', config=config)
 iam_resource = boto3_session.resource('iam')
 aoss_client = boto3_session.client('opensearchserverless', config=config)
 s3_client = boto3_session.client("s3", config=config)
+iam_client = boto3_session.client('iam')
 
 postfix = os.environ['POSTFIX']
-
-bot_client = BotClient(
-    bedrock_agent_client=bedrock_agent_client,
-    runtime_client=runtime_client,
-    lambda_client=lambda_client,
-    iam_resource=iam_resource,
-    postfix=postfix
-)
-
-sync_client = SyncClient(
-    boto3_session=boto3_session,
-    bedrock_agent_client=bedrock_agent_client,
-    runtime_client=runtime_client,
-    lambda_client=lambda_client,
-    iam_resource=iam_resource,
-    aoss_client=aoss_client,
-    s3_client=s3_client,
-    postfix=postfix
-)
 
 app = Flask(__name__)
 app.debug = True
 CORS(app, origins=['https://moodlefte.hardfunstudios.com'])
 
+bot_client = BotClient(
+            bedrock_agent_client=bedrock_agent_client,
+            runtime_client=runtime_client,
+            lambda_client=lambda_client,
+            iam_resource=iam_resource,
+            iam_client=iam_client,
+            postfix=postfix
+        )
+
 @app.route("/")
 def home():    
     return render_template("chat.html", env=os.environ, value=os.environ['THEME'])
-
-@app.route("/create", methods = ['POST'])
-def create_course():
-    course_id = request.json['course_id']
-    try:
-        response = bot_client.create_course_bot(course_id=course_id)
-        return response, 200
-    except Exception as e:
-        return str(e), 500
     
 @app.route("/sync", methods = ['POST'])
 def sync_content():
     course_id = request.json['course_id']
     course_content = request.json['course_content']
     agent_id = request.json['agent_id']
+    data = request.json['data']
+    print(data)
     try:
-        response = sync_client.create_course_knowledge_base(course_id=course_id, course_content=course_content)
+        sync_client = SyncClient(
+            boto3_session=boto3_session,
+            bedrock_agent_client=bedrock_agent_client,
+            runtime_client=runtime_client,
+            lambda_client=lambda_client,
+            iam_resource=iam_resource,
+            aoss_client=aoss_client,
+            s3_client=s3_client,
+            iam_client=iam_client,
+            postfix=postfix
+        )
+        bot_client = BotClient(
+            bedrock_agent_client=bedrock_agent_client,
+            runtime_client=runtime_client,
+            lambda_client=lambda_client,
+            iam_resource=iam_resource,
+            iam_client=iam_client,
+            postfix=postfix
+        )
+        response = sync_client.create_course_knowledge_base(course_id=course_id, course_content=course_content, data=data)
         bot_client._prepare_agent(agent_id=agent_id)
         return response, 200
     except Exception as e:
@@ -80,9 +83,32 @@ def sync_content():
 @app.route("/delete", methods = ['POST'])
 def delete_course():
     course_id = request.json['course_id']
+    agent_data = request.json['agent_data']
     print(course_id)
     try:
-        response = bot_client.delete_course_bot(course_id=course_id)
+        bot_client = BotClient(
+            bedrock_agent_client=bedrock_agent_client,
+            runtime_client=runtime_client,
+            lambda_client=lambda_client,
+            iam_resource=iam_resource,
+            iam_client=iam_client,
+            postfix=postfix,
+            agent_data=agent_data
+        )
+        sync_client = SyncClient(
+            boto3_session=boto3_session,
+            bedrock_agent_client=bedrock_agent_client,
+            runtime_client=runtime_client,
+            lambda_client=lambda_client,
+            iam_resource=iam_resource,
+            iam_client=iam_client,
+            aoss_client=aoss_client,
+            s3_client=s3_client,
+            postfix=postfix
+        )
+        bot_client._delete_resources()
+        sync_client.delete_knowledge_base(course_id=course_id)        
+        response = {'msg': 'Course bot deleted successfully'}
         return response, 200
     except Exception as e:
         return str(e), 500

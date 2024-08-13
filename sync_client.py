@@ -8,10 +8,11 @@ from opensearchpy import OpenSearch, RequestsHttpConnection, AWSV4SignerAuth
 
 class SyncClient:
     def __init__(
-        self, boto3_session, bedrock_agent_client, runtime_client, lambda_client, iam_resource, aoss_client, s3_client, postfix
+        self, boto3_session, bedrock_agent_client, runtime_client, lambda_client, iam_resource, iam_client, aoss_client, s3_client, postfix
     ):
         self.boto3_session = boto3_session
         self.iam_resource = iam_resource
+        self.iam_client = iam_client
         self.lambda_client = lambda_client
         self.bedrock_agent_runtime_client = runtime_client
         self.bedrock_agent_client = bedrock_agent_client
@@ -20,37 +21,47 @@ class SyncClient:
         self.postfix = postfix
         
         self.utility = None
-        
-        self.course_id = None
         self.bucket_name = None
+        self.course_id = None
         self.index_name = None
         self.vector_store_host = None
-        self.collection = None
+        self.collection = {}
         self.encryption_policy = None 
         self.network_policy = None
         self.access_policy = None
         self.bedrock_kb_execution_role_arn = None
-        self.kb = None
-        self.ds = None
+        self.kb = {}
+        self.ds = {}
         
-    def create_course_knowledge_base(self, course_id, course_content, data = None):
+    def create_course_knowledge_base(self, course_id, course_content, data = None, metadata):
+        print("0")
         self.course_id = course_id 
         self.bucket_name = f"course-bot-{self.postfix}-{self.course_id}" 
         self.suffix = f"{self.postfix}-{self.course_id}"
         self.utility = Utility(self.suffix, self.boto3_session)
-        if not data:
+        print("0.1")
+        if data is None:
+            print("ERRROOOOU")
             self._create_vector_store()
             self._create_vector_index()
-            self._upload_data_to_s3(course_content)
+            self._upload_data_to_s3(course_content, file_name=f"{self.course_id}", file_extension=".html")
+            self._upload_data_to_s3(metadata, file_name=f"{self.course_id}.metadata", file_extension=".json")
             self._create_knowledge_base()
             self._start_ingestion_job()
+            return self.to_dict()
         else:
+            print("0.2")
             self.kb['knowledgeBaseId'] = data['knowledgeBaseId']
+            print("0.3")
             self.ds['dataSourceId'] = data['dataSourceId']
-            self._upload_data_to_s3(course_content)
+            print("1")
+            self._upload_data_to_s3(course_content, file_name=f"{self.course_id}", file_extension=".html")
+            self._upload_data_to_s3(metadata, file_name=f"{self.course_id}.metadata", file_extension=".json")
+            print("2")
             self._start_ingestion_job()
-            
-        return self.to_dict()
+            print("3")
+
+            return 'success'
     
     def to_dict(self): 
         return {
@@ -65,23 +76,39 @@ class SyncClient:
         }
     
     def _create_vector_store(self):
+        
         vector_store_name = f'bedrock-rag-{self.suffix}'
         self.index_name = f"bedrock-rag-index-{self.suffix}"
-        bedrock_kb_execution_role = self.utility.create_bedrock_execution_role(bucket_name=self.bucket_name)
-        self.bedrock_kb_execution_role_arn = bedrock_kb_execution_role['Role']['Arn']
-
-        self.encryption_policy, self.network_policy, self.access_policy = self.utility.create_policies_in_oss(
-            vector_store_name=vector_store_name,
-            aoss_client=self.aoss_client,
-            bedrock_kb_execution_role_arn=self.bedrock_kb_execution_role_arn
-        )
-        self.collection = self.aoss_client.create_collection(name=vector_store_name,type='VECTORSEARCH')
-
-        collection_id = self.collection['createCollectionDetail']['id']
-        self.vector_store_host = collection_id + '.us-east-1.aoss.amazonaws.com'
-        self.utility.create_oss_policy_attach_bedrock_execution_role(collection_id=collection_id,
-                                                    bedrock_kb_execution_role=bedrock_kb_execution_role)
-
+        try:
+            bedrock_kb_execution_role = self.utility.create_bedrock_execution_role(bucket_name=self.bucket_name)
+            self.bedrock_kb_execution_role_arn = bedrock_kb_execution_role['Role']['Arn']
+        except self.iam_client.exceptions.EntityAlreadyExistsException:
+            bedrock_kb_execution_role = self.utility.get_execution_role()
+            self.bedrock_kb_execution_role_arn = bedrock_kb_execution_role['Role']['Arn']
+        
+        try:
+            self.encryption_policy, self.network_policy, self.access_policy = self.utility.create_policies_in_oss(
+                vector_store_name=vector_store_name,
+                aoss_client=self.aoss_client,
+                bedrock_kb_execution_role_arn=self.bedrock_kb_execution_role_arn
+            )
+        except Exception as err:
+            print(f"{err=}, {type(err)=}")
+        
+        try:
+            self.collection = self.aoss_client.create_collection(name=vector_store_name,type='VECTORSEARCH')
+            collection_id = self.collection['createCollectionDetail']['id']
+        except self.aoss_client.exceptions.ConflictException:
+            collection = self.aoss_client.batch_get_collection(names=[vector_store_name])
+            self.collection['createCollectionDetail'] = collection['collectionDetails'][0] 
+            collection_id = self.collection['createCollectionDetail']['id']
+            
+        try:
+            self.vector_store_host = collection_id + '.us-east-1.aoss.amazonaws.com'
+            self.utility.create_oss_policy_attach_bedrock_execution_role(collection_id=collection_id,
+                                                        bedrock_kb_execution_role=bedrock_kb_execution_role)
+        except Exception as err:
+            print(f"{err=}, {type(err)=}")
 
     def _create_vector_index(self):
 
@@ -89,50 +116,53 @@ class SyncClient:
         awsauth = auth = AWSV4SignerAuth(credentials, 'us-east-1', 'aoss')
 
         self.index_name = f"bedrock-index-{self.suffix}"
-        body_json = {
-        "settings": {
-            "index.knn": "true"
-        },
-        "mappings": {
-            "properties": {
-                "vector": {
-                    "type": "knn_vector",
-                    "dimension": 1536
-                },
-                "text": {
-                    "type": "text"
-                },
-                "text-metadata": {
-                    "type": "text"         }
+        try:
+            body_json = {
+            "settings": {
+                "index.knn": "true"
+            },
+            "mappings": {
+                "properties": {
+                    "vector": {
+                        "type": "knn_vector",
+                        "dimension": 1536
+                    },
+                    "text": {
+                        "type": "text"
+                    },
+                    "text-metadata": {
+                        "type": "text"         }
+                }
             }
-        }
-        }
-        # Build the OpenSearch client
-        self.oss_client = OpenSearch(
-            hosts=[{'host': self.vector_store_host, 'port': 443}],
-            http_auth=awsauth,
-            use_ssl=True,
-            verify_certs=True,
-            connection_class=RequestsHttpConnection,
-            timeout=300
-        )
-        # # It can take up to a minute for data access rules to be enforced
-        time.sleep(60)
+            }
+            # Build the OpenSearch client
+            self.oss_client = OpenSearch(
+                hosts=[{'host': self.vector_store_host, 'port': 443}],
+                http_auth=awsauth,
+                use_ssl=True,
+                verify_certs=True,
+                connection_class=RequestsHttpConnection,
+                timeout=300
+            )
+            # # It can take up to a minute for data access rules to be enforced
+            time.sleep(60)
 
-        # Create index
-        response = self.oss_client.indices.create(index=self.index_name, body=json.dumps(body_json))
-        print('\nCreating index:')
-        print(response)
+            # Create index
+            response = self.oss_client.indices.create(index=self.index_name, body=json.dumps(body_json))
+            print('\nCreating index:')
+            time.sleep(60)
+            print(response)
+        except Exception as err:
+            print(f"{err=}, {type(err)=}")
 
-
-    def _upload_data_to_s3(self, course_content):
+    def _upload_data_to_s3(self, course_content, file_name, file_extension):
         s3 = self.boto3_session.resource('s3')
         if s3.Bucket(self.bucket_name) not in s3.buckets.all():
             s3.create_bucket(Bucket=self.bucket_name)
             
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".html") as tmp:
+        with tempfile.NamedTemporaryFile(delete=False, suffix=file_extension) as tmp:
             tmp.write(course_content.encode())
-            tmp_file_name = tmp.name
+            tmp_file_name = file_name + file_extension
 
         # Fazer upload do arquivo para o S3
         self.s3_client.upload_file(tmp_file_name, self.bucket_name, os.path.basename(tmp_file_name))
@@ -141,7 +171,7 @@ class SyncClient:
         os.remove(tmp_file_name)        
     
     def _create_knowledge_base(self):
-
+        
         opensearchServerlessConfiguration = {
                     "collectionArn": self.collection["createCollectionDetail"]['arn'],
                     "vectorIndexName": self.index_name,
@@ -151,7 +181,7 @@ class SyncClient:
                         "metadataField": "text-metadata"
                     }
                 }
-
+        print(opensearchServerlessConfiguration)
         chunkingStrategyConfiguration = {
             "chunkingStrategy": "FIXED_SIZE",
             "fixedSizeChunkingConfiguration": {
@@ -159,16 +189,18 @@ class SyncClient:
                 "overlapPercentage": 20
             }
         }
+        print(chunkingStrategyConfiguration)
 
         s3Configuration = {
             "bucketArn": f"arn:aws:s3:::{self.bucket_name}",
         }
-
+        print(s3Configuration)
         embeddingModelArn = f"arn:aws:bedrock:us-east-1::foundation-model/amazon.titan-embed-text-v1"
 
         name = f"bedrock-knowledge-base-{self.suffix}"
         description = "Amazon shareholder letter knowledge base."
         roleArn = self.bedrock_kb_execution_role_arn
+        print(roleArn)
                 
         try:
             create_kb_response = self.bedrock_agent_client.create_knowledge_base(
@@ -187,11 +219,8 @@ class SyncClient:
                 }
             )
             self.kb = create_kb_response["knowledgeBase"]
-        except Exception as err:
-            print(f"{err=}, {type(err)=}")
-
-
-        get_kb_response = self.bedrock_agent_client.get_knowledge_base(knowledgeBaseId = self.kb['knowledgeBaseId'])
+        except self.bedrock_agent_client.exceptions.InternalServerException as err:
+            print(err)
 
         create_ds_response = self.bedrock_agent_client.create_data_source(
             name = name,
@@ -228,7 +257,7 @@ class SyncClient:
         pp.pprint(kb_id)
         
         
-    def delete_course_bot(self, course_id, data):
+    def delete_knowledge_base(self, course_id, data):
         self.suffix = f"{self.postfix}-{course_id}"
         self.utility = Utility(self.suffix, self.boto3_session)
         
