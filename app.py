@@ -1,4 +1,5 @@
 import os
+import json
 from flask import Flask, render_template, request
 from flask_cors import CORS
 from bot_client import BotClient
@@ -43,10 +44,9 @@ def sync_content():
     course_content = request.json['course_content']
     data = request.json['data']
     metadata = request.json['metadata']
-    agent_data = request.json['agent_data']
-    agent_id = agent_data.agent_id
+    agent_data = json.loads(request.json['agent_data'])
 
-    print(data)
+    print(agent_data)
     try:
         sync_client = SyncClient(
             boto3_session=boto3_session,
