@@ -83,18 +83,7 @@ def sync_content():
 @app.route("/delete", methods = ['POST'])
 def delete_course():
     course_id = request.json['course_id']
-    agent_data = request.json['agent_data']
-    print(course_id)
     try:
-        bot_client = BotClient(
-            bedrock_agent_client=bedrock_agent_client,
-            runtime_client=runtime_client,
-            lambda_client=lambda_client,
-            iam_resource=iam_resource,
-            iam_client=iam_client,
-            postfix=postfix,
-            agent_data=agent_data
-        )
         sync_client = SyncClient(
             boto3_session=boto3_session,
             bedrock_agent_client=bedrock_agent_client,
@@ -106,7 +95,6 @@ def delete_course():
             s3_client=s3_client,
             postfix=postfix
         )
-        bot_client._delete_resources()
         sync_client.delete_knowledge_base(course_id=course_id)        
         response = {'msg': 'Course bot deleted successfully'}
         return response, 200
