@@ -33,7 +33,7 @@ LAMBDA_FUNCTIONS = [
 
 class BotClient:
     def __init__(
-        self, bedrock_agent_client, runtime_client, lambda_client, iam_resource, iam_client, postfix, agent_data=None
+        self, bedrock_agent_client, runtime_client, lambda_client, iam_resource, iam_client, postfix, agent_data
     ):
         self.iam_resource = iam_resource
         self.lambda_client = lambda_client
@@ -53,13 +53,12 @@ class BotClient:
             self.lambda_roles[function['name']] = None
             self.lambda_functions[function['name']] = None
             
-        if(agent_data):
-            self.agent = self.bedrock_wrapper.get_agent(agent_id=agent_data['agent_id'])
-            self.agent_alias = self.bedrock_agent_client.get_agent_alias(agentId=agent_data['agent_id'], agentAliasId=agent_data['agent_alias'])["agentAlias"]
-            self.agent_role = self.iam_client.get_role(RoleName=agent_data['agent_role'])
-            for function in LAMBDA_FUNCTIONS:
-                self.lambda_roles[function['name']] = self.iam_client.get_role(RoleName=agent_data['lambda']['roles'][function['name']])
-                self.lambda_functions[function['name']] = self.lambda_client.get_function(FunctionName=agent_data['lambda']['functions'][function['name']])
+        self.agent = self.bedrock_wrapper.get_agent(agent_id=agent_data['agent_id'])
+        self.agent_alias = self.bedrock_agent_client.get_agent_alias(agentId=agent_data['agent_id'], agentAliasId=agent_data['agent_alias'])["agentAlias"]
+        self.agent_role = self.iam_client.get_role(RoleName=agent_data['agent_role'])
+        for function in LAMBDA_FUNCTIONS:
+            self.lambda_roles[function['name']] = self.iam_client.get_role(RoleName=agent_data['lambda']['roles'][function['name']])
+            self.lambda_functions[function['name']] = self.lambda_client.get_function(FunctionName=agent_data['lambda']['functions'][function['name']])
                    
 
     def create_course_bot(self, course_id):

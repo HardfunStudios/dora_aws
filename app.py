@@ -27,13 +27,7 @@ iam_resource = boto3_session.resource('iam')
 aoss_client = boto3_session.client('opensearchserverless', config=config)
 s3_client = boto3_session.client("s3", config=config)
 iam_client = boto3_session.client('iam')
-
 postfix = os.environ['POSTFIX']
-
-app = Flask(__name__)
-app.debug = True
-CORS(app, origins=['https://moodlefte.hardfunstudios.com'])
-
 bot_client = BotClient(
             bedrock_agent_client=bedrock_agent_client,
             runtime_client=runtime_client,
@@ -42,6 +36,9 @@ bot_client = BotClient(
             iam_client=iam_client,
             postfix=postfix
         )
+app = Flask(__name__)
+app.debug = True
+CORS(app, origins=['https://moodlefte.hardfunstudios.com'])
 
 @app.route("/")
 def home():    
@@ -51,9 +48,11 @@ def home():
 def sync_content():
     course_id = request.json['course_id']
     course_content = request.json['course_content']
-    agent_id = request.json['agent_id']
     data = request.json['data']
     metadata = request.json['metadata']
+    agent_data = request.json['agent_data']
+    agent_id = agent_data['agent_id']
+
     print(data)
     try:
         sync_client = SyncClient(
