@@ -33,7 +33,7 @@ class SyncClient:
         self.kb = {}
         self.ds = {}
         
-    def create_course_knowledge_base(self, course_id, course_content, data = None, metadata):
+    def create_course_knowledge_base(self, course_id, course_content, metadata, data = None):
         print("0")
         self.course_id = course_id 
         self.bucket_name = f"course-bot-{self.postfix}-{self.course_id}" 
