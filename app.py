@@ -43,8 +43,6 @@ def sync_content():
     course_content = request.json['course_content']
     data = request.json['data']
     metadata = request.json['metadata']
-    print(request.json['agent_data'])
-
     agent_data = request.json['agent_data']
 
     try:
