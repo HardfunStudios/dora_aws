@@ -69,7 +69,7 @@ def sync_content():
             agent_data=agent_data
         )
         response = sync_client.create_course_knowledge_base(course_id=course_id, course_content=course_content, metadata=metadata, data=data)
-        bot_client._prepare_agent(agent_id=agent_id[])
+        bot_client._prepare_agent(agent_id=agent_data['agent_id'])
         return response, 200
     except Exception as e:
         return str(e), 500
