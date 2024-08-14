@@ -37,7 +37,7 @@ class SyncClient:
         self.course_id = course_id 
         self.bucket_name = f"course-bot-{self.postfix}-{self.course_id}" 
         self.suffix = f"{self.postfix}-{self.course_id}"
-        self.utility = Utility(self.suffix, self.boto3_session)
+       # self.utility = Utility(self.suffix, self.boto3_session)
         if not isinstance(data, dict) or not data:
             self._create_vector_store()
             self._create_vector_index()
