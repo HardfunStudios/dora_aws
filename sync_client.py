@@ -109,25 +109,29 @@ class SyncClient:
         self.index_name = f"bedrock-index-{self.suffix}"
         try:
             body_json = {
-            "settings": {
-                "index": {
-                    "knn": "true",
-                    "engine": "faiss"
+                "settings": {
+                    "index.knn": True,
+                    "number_of_shards": 1,
+                    "knn.algo_param.ef_search": 512,
+                    "number_of_replicas": 0,
+                },
+                "mappings": {
+                    "properties": {
+                        "vector": {
+                            "type": "knn_vector",
+                            "dimension": 1536,
+                            "method": {
+                                "name": "hnsw",
+                                "engine": "faiss"
+                            },
+                        },
+                        "text": {
+                            "type": "text"
+                        },
+                        "text-metadata": {
+                            "type": "text"         }
+                    }
                 }
-            },
-            "mappings": {
-                "properties": {
-                    "vector": {
-                        "type": "knn_vector",
-                        "dimension": 1536
-                    },
-                    "text": {
-                        "type": "text"
-                    },
-                    "text-metadata": {
-                        "type": "text"         }
-                }
-            }
             }
             # Build the OpenSearch client
             self.oss_client = OpenSearch(
