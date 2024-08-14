@@ -6,8 +6,8 @@ class Utility:
         self.boto3_session = boto3_session
         self.region_name = self.boto3_session.region_name
         self.iam_client = self.boto3_session.client('iam')
-        self.account_number = boto3.client('sts').get_caller_identity().get('Account')
-        self.identity = boto3.client('sts').get_caller_identity()['Arn']
+        self.account_number = boto3_session.client('sts').get_caller_identity().get('Account')
+        self.identity = boto3_session.client('sts').get_caller_identity()['Arn']
 
         self.encryption_policy_name = f"bedrock-rag-sp-{suffix}"
         self.network_policy_name = f"bedrock-rag-np-{suffix}"
