@@ -39,13 +39,17 @@ def home():
     
 @app.route("/sync", methods = ['POST'])
 def sync_content():
-    course_id = request.json['course_id']
-    course_content = request.json['course_content']
-    data = request.json['data']
-    metadata = request.json['metadata']
-    agent_data = request.json['agent_data']
+    print("entrou no sync")
+    
+    try:    
+        course_id = request.json['course_id']
+        course_content = request.json['course_content']
+        data = request.json['data']
+        metadata = request.json['metadata']
+        agent_data = request.json['agent_data']
 
-    try:
+        print("ATRIBUIU AS VARIAVEIS")
+        
         sync_client = SyncClient(
             boto3_session=boto3_session,
             bedrock_agent_client=bedrock_agent_client,
@@ -57,6 +61,7 @@ def sync_content():
             iam_client=iam_client,
             postfix=postfix
         )
+        print("INSTANCIOU O SYNC CLIENT")
         bot_client = BotClient(
             bedrock_agent_client=bedrock_agent_client,
             runtime_client=runtime_client,
@@ -66,7 +71,9 @@ def sync_content():
             postfix=postfix,
             agent_data=agent_data
         )
+        print("INSTANCIOU O BOT CLIENT")
         response = sync_client.create_course_knowledge_base(course_id=course_id, course_content=course_content, metadata=metadata, data=data)
+        print(response)
         bot_client._prepare_agent()
         return response, 200
     except Exception as e:
