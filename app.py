@@ -47,10 +47,7 @@ def sync_content():
         course_content = request.json['course_content']
         data = request.json['data']
         metadata = request.json['metadata']
-        agent_data = request.json['agent_data']
-
-        print("ATRIBUIU AS VARIAVEIS")
-        
+        agent_data = request.json['agent_data']        
         sync_client = SyncClient(
             boto3_session=boto3_session,
             bedrock_agent_client=bedrock_agent_client,
@@ -60,9 +57,9 @@ def sync_content():
             aoss_client=aoss_client,
             s3_client=s3_client,
             iam_client=iam_client,
-            postfix=postfix
+            postfix=postfix,
+            agent_data=agent_data
         )
-        print("INSTANCIOU O SYNC CLIENT")
         bot_client = BotClient(
             bedrock_agent_client=bedrock_agent_client,
             runtime_client=runtime_client,
@@ -72,14 +69,11 @@ def sync_content():
             postfix=postfix,
             agent_data=agent_data
         )
-        print("INSTANCIOU O BOT CLIENT")
         response = sync_client.create_course_knowledge_base(course_id=course_id, course_content=course_content, metadata=metadata, data=data)
-        print(response)
         bot_client._prepare_agent()
         return response, 200
     except Exception as e:
-        error_message = traceback.format_exc()
-        return error_message, 500
+        return data, 500
     
 @app.route("/delete", methods = ['POST'])
 def delete_course():
