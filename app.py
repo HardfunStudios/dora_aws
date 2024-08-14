@@ -78,7 +78,8 @@ def sync_content():
         bot_client._prepare_agent()
         return response, 200
     except Exception as e:
-        return str(e), 500
+        error_message = traceback.format_exc()
+        return error_message, 500
     
 @app.route("/delete", methods = ['POST'])
 def delete_course():
