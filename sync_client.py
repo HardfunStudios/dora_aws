@@ -115,7 +115,7 @@ class SyncClient:
                     "knn.algo_param.ef_search": 512,
                     "number_of_replicas": 0,
                 },
-                "mappings": {
+                "mapping": {
                     "properties": {
                         "vector": {
                             "type": "knn_vector",
