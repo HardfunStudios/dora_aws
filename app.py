@@ -95,8 +95,7 @@ def delete_course():
         response = {'msg': 'Course bot deleted successfully'}
         return response, 200
     except Exception as e:
-        credentials = {"ACCESS_KEY" os.getenv('ACCESS_KEY'), "SECRET_KEY": os.getenv('SECRET_KEY')}
-        error_message = traceback.format_exc() + str()
+        error_message = traceback.format_exc()
         return error_message, 500
     
 
