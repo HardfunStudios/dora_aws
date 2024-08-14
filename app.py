@@ -18,8 +18,8 @@ config = botocore.config.Config(
 
 boto3_session = boto3.session.Session(
     region_name='us-east-1',
-    aws_access_key_id=os.environ['ACCESS_KEY'],
-    aws_secret_access_key=os.environ['SECRET_KEY']
+    aws_access_key_id=os.getenv('ACCESS_KEY'),
+    aws_secret_access_key=os.getenv('SECRET_KEY')
 )
 
 bedrock_agent_client = boto3_session.client('bedrock-agent', config=config)
@@ -95,7 +95,8 @@ def delete_course():
         response = {'msg': 'Course bot deleted successfully'}
         return response, 200
     except Exception as e:
-        error_message = traceback.format_exc()
+        credentials = {"ACCESS_KEY" os.getenv('ACCESS_KEY'), "SECRET_KEY": os.getenv('SECRET_KEY')}
+        error_message = traceback.format_exc() + str()
         return error_message, 500
     
 
