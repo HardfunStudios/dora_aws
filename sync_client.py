@@ -33,15 +33,12 @@ class SyncClient:
         self.kb = {}
         self.ds = {}
         
-    def create_course_knowledge_base(self, course_id, course_content, metadata, data = None):
-        print("0")
+    def create_course_knowledge_base(self, course_id, course_content, metadata,data = None):
         self.course_id = course_id 
         self.bucket_name = f"course-bot-{self.postfix}-{self.course_id}" 
         self.suffix = f"{self.postfix}-{self.course_id}"
         self.utility = Utility(self.suffix, self.boto3_session)
-        print("0.1")
-        if data is None:
-            print("ERRROOOOU")
+        if not isinstance(data, dict) or not data:
             self._create_vector_store()
             self._create_vector_index()
             self._upload_data_to_s3(course_content, file_name=f"{self.course_id}", file_extension=".html")
@@ -50,17 +47,11 @@ class SyncClient:
             self._start_ingestion_job()
             return self.to_dict()
         else:
-            print("0.2")
             self.kb['knowledgeBaseId'] = data['knowledgeBaseId']
-            print("0.3")
             self.ds['dataSourceId'] = data['dataSourceId']
-            print("1")
             self._upload_data_to_s3(course_content, file_name=f"{self.course_id}", file_extension=".html")
             self._upload_data_to_s3(metadata, file_name=f"{self.course_id}.metadata", file_extension=".json")
-            print("2")
             self._start_ingestion_job()
-            print("3")
-
             return 'success'
     
     def to_dict(self): 

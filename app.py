@@ -47,7 +47,8 @@ def sync_content():
         course_content = request.json['course_content']
         data = request.json['data']
         metadata = request.json['metadata']
-        agent_data = request.json['agent_data']        
+        agent_data = request.json['agent_data']
+                
         sync_client = SyncClient(
             boto3_session=boto3_session,
             bedrock_agent_client=bedrock_agent_client,
@@ -73,7 +74,8 @@ def sync_content():
         bot_client._prepare_agent()
         return response, 200
     except Exception as e:
-        return data, 500
+        error_message = traceback.format_exc()
+        return error_message, 500
     
 @app.route("/delete", methods = ['POST'])
 def delete_course():
