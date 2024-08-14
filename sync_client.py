@@ -122,7 +122,8 @@ class SyncClient:
                             "dimension": 1536,
                             "method": {
                                 "name": "hnsw",
-                                "engine": "FAISS"
+                                "engine": "faiss",
+                                "space_type": "l2"
                             },
                         },
                         "text": {
