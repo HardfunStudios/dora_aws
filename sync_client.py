@@ -155,11 +155,10 @@ class SyncClient:
         with os.fdopen(fd, 'w') as tmp:
             tmp.write(course_content)
 
-        tmp_file_name = "{file_name}.{file_extension}"
-        self.s3_client.upload_file(tmp_file_name, self.bucket_name, os.path.basename(path))
+        self.s3_client.upload_file(file_name, self.bucket_name, os.path.basename(path))
 
         # Remover o arquivo temporário após o upload
-        os.remove(tmp_file_name)        
+        os.remove(path)        
     
     def _create_knowledge_base(self):
         
