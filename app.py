@@ -121,6 +121,8 @@ def get_response():
 
 if __name__ == "__main__":
     from waitress import serve
+    import logging
     import os
     print(os.environ['APP_HOST'])
-    serve(app, host="0.0.0.0", port="8000", debug=True)
+    logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(message)s')
+    serve(app, host="0.0.0.0", port="8000")
