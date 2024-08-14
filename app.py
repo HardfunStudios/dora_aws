@@ -58,8 +58,7 @@ def sync_content():
             aoss_client=aoss_client,
             s3_client=s3_client,
             iam_client=iam_client,
-            postfix=postfix,
-            agent_data=agent_data
+            postfix=postfix
         )
         bot_client = BotClient(
             bedrock_agent_client=bedrock_agent_client,
@@ -67,7 +66,8 @@ def sync_content():
             lambda_client=lambda_client,
             iam_resource=iam_resource,
             iam_client=iam_client,
-            postfix=postfix
+            postfix=postfix,
+            agent_data=agent_data
         )
         response = sync_client.create_course_knowledge_base(course_id=course_id, course_content=course_content, metadata=metadata, data=data)
         bot_client._prepare_agent()
