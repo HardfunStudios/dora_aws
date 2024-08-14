@@ -7,6 +7,7 @@ from course_bot import CourseBot
 from sync_client import SyncClient
 import boto3
 import botocore
+import traceback
 
 config = botocore.config.Config(
     read_timeout=1000,
@@ -98,7 +99,8 @@ def delete_course():
         response = {'msg': 'Course bot deleted successfully'}
         return response, 200
     except Exception as e:
-        return str(e), 500
+        error_message = traceback.format_exc()
+        return error_message, 500
     
 
 @app.route("/get", methods = ['POST'])
