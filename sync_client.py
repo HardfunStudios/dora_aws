@@ -129,7 +129,8 @@ class SyncClient:
                             "type": "text"
                         },
                         "text-metadata": {
-                            "type": "text"         }
+                            "type": "text"  
+                        }
                     }
                 }
             }
@@ -146,7 +147,7 @@ class SyncClient:
             time.sleep(60)
 
             # Create index
-            response = self.oss_client.indices.create(index=self.index_name, body=json.dumps(body_json))
+            response = self.oss_client.indices.create(index=self.index_name, body=body_json)
             print('\nCreating index:')
             time.sleep(60)
             print(response)
@@ -158,15 +159,14 @@ class SyncClient:
         if s3.Bucket(self.bucket_name) not in s3.buckets.all():
             s3.create_bucket(Bucket=self.bucket_name)
             
-        fd, path = tempfile.mkstemp(prefix=file_name, suffix=file_extension)
-        content = json.dumps(content) if isinstance(content, dict) else content
-        with os.fdopen(fd, 'w') as tmp:
+        with tempfile.NamedTemporaryFile(prefix=file_name, suffix=file_extension, delete=False, mode='w') as tmp:
+            content = json.dumps(content) if isinstance(content, dict) else content
             tmp.write(content)
+            temp_file_path = tmp.name
 
-        self.s3_client.upload_file(path, self.bucket_name, os.path.basename(path))
+        self.s3_client.upload_file(temp_file_path, self.bucket_name, os.path.basename(temp_file_path))
 
-        # Remover o arquivo temporário após o upload
-        os.remove(path)        
+        os.remove(temp_file_path)        
     
     def _create_knowledge_base(self):
         
