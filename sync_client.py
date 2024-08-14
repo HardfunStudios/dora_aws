@@ -151,15 +151,13 @@ class SyncClient:
         if s3.Bucket(self.bucket_name) not in s3.buckets.all():
             s3.create_bucket(Bucket=self.bucket_name)
             
-        with tempfile.NamedTemporaryFile(delete=False, suffix=file_extension) as tmp:
-            tmp.write(course_content.encode())
-            tmp_file_name = file_name + file_extension
+        fd, path = tempfile.mkstemp(prefix=file_name, suffix=file_extension)
+        with os.fdopen(fd, 'w') as tmp:
+            tmp.write(course_content)
 
-        # Fazer upload do arquivo para o S3
-        self.s3_client.upload_file(tmp_file_name, self.bucket_name, os.path.basename(tmp_file_name))
+        self.s3_client.upload_file(fd, self.bucket_name, path)
 
-        # Remover o arquivo temporário após o upload
-        os.remove(tmp_file_name)        
+        os.remove(fd)        
     
     def _create_knowledge_base(self):
         
