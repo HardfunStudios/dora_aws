@@ -110,12 +110,13 @@ class SyncClient:
         try:
             body_json = {
                 "settings": {
-                    "index.knn": True,
-                    "number_of_shards": 1,
-                    "knn.algo_param.ef_search": 512,
-                    "number_of_replicas": 0,
+                    "index": {
+                        "number_of_shards": "2",
+                        "knn.algo_param": {"ef_search": "512"},
+                        "knn": "true",
+                    }
                 },
-                "mapping": {
+                "mappings": {
                     "properties": {
                         "vector": {
                             "type": "knn_vector",
