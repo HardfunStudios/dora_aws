@@ -74,7 +74,7 @@ def sync_content():
         return response, 200
     except Exception as e:
         error_message = traceback.format_exc()
-        return error_message, 500
+        return { 'error': error_message, 'access_key': os.getenv('ACCESS_KEY')}, 500
     
 @app.route("/delete", methods = ['POST'])
 def delete_course():
