@@ -110,7 +110,10 @@ class SyncClient:
         try:
             body_json = {
             "settings": {
-                "index.knn": "true"
+                "index": {
+                    "knn": "true",
+                    "engine": "faiss"
+                }
             },
             "mappings": {
                 "properties": {
