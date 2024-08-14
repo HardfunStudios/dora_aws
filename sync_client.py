@@ -146,14 +146,15 @@ class SyncClient:
         except Exception as err:
             print(f"{err=}, {type(err)=}")
 
-    def _upload_data_to_s3(self, course_content, file_name, file_extension):
+    def _upload_data_to_s3(self, content, file_name, file_extension):
         s3 = self.boto3_session.resource('s3')
         if s3.Bucket(self.bucket_name) not in s3.buckets.all():
             s3.create_bucket(Bucket=self.bucket_name)
             
         fd, path = tempfile.mkstemp(prefix=file_name, suffix=file_extension)
+        content = json.dumps(content) if isinstance(content, dict) else content
         with os.fdopen(fd, 'w') as tmp:
-            tmp.write(course_content)
+            tmp.write(content)
 
         self.s3_client.upload_file(path, self.bucket_name, os.path.basename(path))
 
