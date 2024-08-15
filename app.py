@@ -51,9 +51,9 @@ def sync_content():
         metadata = request.json['metadata']
         agent_data = request.json['agent_data']
         
-        bucket_name = f"course-bot-{self.postfix}-{self.course_id}" 
-        knowledge_base_name = f"course-bot-{self.postfix}-{self.course_id}"
-        knowledge_base_description = f"Course bot for course {self.course_id}"
+        bucket_name = f"course-bot-{postfix}-{course_id}" 
+        knowledge_base_name = f"course-bot-{postfix}-{course_id}"
+        knowledge_base_description = f"Course bot for course {course_id}"
         knowledge_base = BedrockKnowledgeBase(
                 kb_name=knowledge_base_name,
                 kb_description=knowledge_base_description,
