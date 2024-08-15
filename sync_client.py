@@ -5,6 +5,7 @@ import time
 import tempfile
 from utility import Utility
 from opensearchpy import OpenSearch, RequestsHttpConnection, AWSV4SignerAuth
+from knowledge_base import BedrockKnowledgeBase
 
 class SyncClient:
     def __init__(
@@ -184,18 +185,15 @@ class SyncClient:
                 "overlapPercentage": 20
             }
         }
-        print(chunkingStrategyConfiguration)
 
         s3Configuration = {
             "bucketArn": f"arn:aws:s3:::{self.bucket_name}",
         }
-        print(s3Configuration)
         embeddingModelArn = f"arn:aws:bedrock:us-east-1::foundation-model/amazon.titan-embed-text-v1"
 
         name = f"bedrock-knowledge-base-{self.suffix}"
         description = "Amazon shareholder letter knowledge base."
         roleArn = self.bedrock_kb_execution_role_arn
-        print(roleArn)
                 
         try:
             create_kb_response = self.bedrock_agent_client.create_knowledge_base(

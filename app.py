@@ -8,6 +8,8 @@ from sync_client import SyncClient
 import boto3
 import botocore
 import traceback
+from knowledge_base import BedrockKnowledgeBase
+import time
 
 config = botocore.config.Config(
     read_timeout=1000,
@@ -48,29 +50,42 @@ def sync_content():
         data = request.json['data']
         metadata = request.json['metadata']
         agent_data = request.json['agent_data']
-                
-        sync_client = SyncClient(
-            boto3_session=boto3_session,
-            bedrock_agent_client=bedrock_agent_client,
-            runtime_client=runtime_client,
-            lambda_client=lambda_client,
-            iam_resource=iam_resource,
-            aoss_client=aoss_client,
-            s3_client=s3_client,
-            iam_client=iam_client,
-            postfix=postfix
+        
+        bucket_name = f"course-bot-{self.postfix}-{self.course_id}" 
+        knowledge_base_name = f"course-bot-{self.postfix}-{self.course_id}"
+        knowledge_base_description = f"Course bot for course {self.course_id}"
+        knowledge_base = BedrockKnowledgeBase(
+                kb_name=knowledge_base_name,
+                kb_description=knowledge_base_description,
+                data_bucket_name=bucket_name,
+                boto3_session=boto3_session,
+                courseid=course_id
+            )
+        if not data:
+           knowledge_base.setup_knowledge_base() 
+           bedrock_agent_client.associate_agent_knowledge_base(
+                agentId=agent_data['agent_id'],
+                agentVersion='DRAFT',
+                description='Access the knowledge base when customers ask about the plates in the menu.',
+                knowledgeBaseId=knowledge_base.id,
+                knowledgeBaseState='ENABLED'
+            )
+        
+        knowledge_base.upload_data_to_s3(content=course_content, file_name=course_id, file_extension='.txt')
+        knowledge_base.upload_data_to_s3(content=json.dump(metadata), file_name=course_id, file_extension='.json')
+        knowledge_base.start_ingestion_job()
+        bedrock_agent_client.prepare_agent(
+            agentId=agent_data['agent_id']
         )
-        bot_client = BotClient(
-            bedrock_agent_client=bedrock_agent_client,
-            runtime_client=runtime_client,
-            lambda_client=lambda_client,
-            iam_resource=iam_resource,
-            iam_client=iam_client,
-            postfix=postfix,
-            agent_data=agent_data
+        time.sleep(30)
+        response = bedrock_agent_client.create_agent_alias(
+            agentAliasName='TestAlias',
+            agentId=agent_data['agent_id'],
+            description='Test alias',
         )
-        response = sync_client.create_course_knowledge_base(course_id=course_id, course_content=course_content, metadata=metadata, data=data)
-        bot_client._prepare_agent()
+
+        alias_id = response["agentAlias"]["agentAliasId"]
+        response = {'msg': 'Course bot created successfully', 'alias_id': alias_id}
         return response, 200
     except Exception as e:
         error_message = traceback.format_exc()
