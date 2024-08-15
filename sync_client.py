@@ -177,7 +177,6 @@ class SyncClient:
                         "metadataField": "text-metadata"
                     }
                 }
-        print(opensearchServerlessConfiguration)
         chunkingStrategyConfiguration = {
             "chunkingStrategy": "FIXED_SIZE",
             "fixedSizeChunkingConfiguration": {
@@ -206,7 +205,12 @@ class SyncClient:
                 knowledgeBaseConfiguration = {
                     "type": "VECTOR",
                     "vectorKnowledgeBaseConfiguration": {
-                        "embeddingModelArn": embeddingModelArn
+                        "embeddingModelArn": embeddingModelArn,
+                        'embeddingModelConfiguration': {
+                            'bedrockEmbeddingModelConfiguration': {
+                                'dimensions': 1536
+                            }
+                        }
                     }
                 },
                 storageConfiguration = {
