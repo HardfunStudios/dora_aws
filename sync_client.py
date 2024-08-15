@@ -120,7 +120,7 @@ class SyncClient:
                     "properties": {
                         "vector": {
                             "type": "knn_vector",
-                            "dimension": 1536,
+                            "dimension": "1536",
                             "method": {
                                 "name": "hnsw",
                                 "engine": "faiss",
