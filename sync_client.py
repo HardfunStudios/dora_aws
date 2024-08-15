@@ -110,11 +110,7 @@ class SyncClient:
         try:
             body_json = {
                 "settings": {
-                    "index": {
-                        "number_of_shards": "2",
-                        "knn.algo_param": {"ef_search": "512"},
-                        "knn": "true",
-                    }
+                    "index.knn": "true"
                 },
                 "mappings": {
                     "properties": {
