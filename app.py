@@ -85,7 +85,7 @@ def sync_content():
         )
 
         alias_id = response["agentAlias"]["agentAliasId"]
-        response = {'msg': 'Course bot created successfully', 'alias_id': alias_id}
+        response = {'msg': 'Course bot created successfully', 'alias_id': alias_id, 'kb_name': knowledge_base_name}   
         return response, 200
     except Exception as e:
         error_message = traceback.format_exc()
