@@ -116,10 +116,11 @@ class SyncClient:
                     "properties": {
                         "vector": {
                             "type": "knn_vector",
-                            "dimension": 1536,
+                            "dimension": "1536",
                             "method": {
                                 "name": "hnsw",
                                 "engine": "faiss",
+                                "space_type": "l2"
                             },
                         },
                         "text": {
@@ -189,7 +190,7 @@ class SyncClient:
             "bucketArn": f"arn:aws:s3:::{self.bucket_name}",
         }
         print(s3Configuration)
-        embeddingModelArn = f"arn:aws:bedrock:us-east-1::foundation-model/amazon.titan-embed-text-v2:0"
+        embeddingModelArn = f"arn:aws:bedrock:us-east-1::foundation-model/cohere.embed-multilingual-v3"
 
         name = f"bedrock-knowledge-base-{self.suffix}"
         description = "Amazon shareholder letter knowledge base."
@@ -204,7 +205,12 @@ class SyncClient:
                 knowledgeBaseConfiguration = {
                     "type": "VECTOR",
                     "vectorKnowledgeBaseConfiguration": {
-                        "embeddingModelArn": embeddingModelArn
+                        "embeddingModelArn": embeddingModelArn,
+                        'embeddingModelConfiguration': {
+                            'bedrockEmbeddingModelConfiguration': {
+                                'dimensions': 1024
+                            }
+                        }
                     }
                 },
                 storageConfiguration = {
