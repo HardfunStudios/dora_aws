@@ -38,6 +38,7 @@ class BedrockKnowledgeBase:
             kb_name,
             boto3_session,
             courseid,
+            kb_id,
             kb_description=None,
             data_bucket_name=None,
             embedding_model="amazon.titan-embed-text-v1",
@@ -50,6 +51,7 @@ class BedrockKnowledgeBase:
             data_bucket_name (str): name of s3 bucket to connect with knowledge base
             embedding_model (str): embedding model to use
         """
+        self.knowledgeBaseId = kb_id
         self.region_name = boto3_session.region_name
         self.iam_client = boto3_session.client('iam')
         self.account_number = boto3_session.client('sts').get_caller_identity().get('Account')
@@ -502,6 +504,7 @@ class BedrockKnowledgeBase:
                 }
             )
             kb = create_kb_response["knowledgeBase"]
+            self.knowledgeBaseId = kb["knowledgeBaseId"]
             pp.pprint(kb)
         except self.bedrock_agent_client.exceptions.ConflictException:
             kbs = self.bedrock_agent_client.list_knowledge_bases(
@@ -513,6 +516,7 @@ class BedrockKnowledgeBase:
                     kb_id = kb['knowledgeBaseId']
             response = self.bedrock_agent_client.get_knowledge_base(knowledgeBaseId=kb_id)
             kb = response['knowledgeBase']
+            self.knowledgeBaseId = kb["knowledgeBaseId"]
             pp.pprint(kb)
 
         # Create a DataSource in KnowledgeBase

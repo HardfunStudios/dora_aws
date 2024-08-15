@@ -55,6 +55,7 @@ def sync_content():
         knowledge_base_name = f"course-bot-{postfix}-{course_id}"
         knowledge_base_description = f"Course bot for course {course_id}"
         knowledge_base = BedrockKnowledgeBase(
+                kb_id=data['kb_id'] if data else None,
                 kb_name=knowledge_base_name,
                 kb_description=knowledge_base_description,
                 data_bucket_name=bucket_name,
@@ -67,7 +68,7 @@ def sync_content():
                 agentId=agent_data['agent_id'],
                 agentVersion='DRAFT',
                 description='Access the knowledge base when customers ask about the plates in the menu.',
-                knowledgeBaseId=knowledge_base.id,
+                knowledgeBaseId=knowledge_base.knowledgeBaseId,
                 knowledgeBaseState='ENABLED'
             )
         
