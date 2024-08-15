@@ -116,12 +116,7 @@ class SyncClient:
                     "properties": {
                         "vector": {
                             "type": "knn_vector",
-                            "dimension": 1024,
-                            "method": {
-                                "name": "hnsw",
-                                "engine": "faiss",
-                                "space_type": "l2"
-                            },
+                            "dimension": 1024
                         },
                         "text": {
                             "type": "text"
