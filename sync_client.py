@@ -206,12 +206,7 @@ class SyncClient:
                 knowledgeBaseConfiguration = {
                     "type": "VECTOR",
                     "vectorKnowledgeBaseConfiguration": {
-                        "embeddingModelArn": embeddingModelArn,
-                        'embeddingModelConfiguration': {
-                            'bedrockEmbeddingModelConfiguration': {
-                                'dimensions': 1536
-                            }
-                        }
+                        "embeddingModelArn": embeddingModelArn
                     }
                 },
                 storageConfiguration = {
