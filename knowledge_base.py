@@ -50,15 +50,15 @@ class BedrockKnowledgeBase:
             data_bucket_name (str): name of s3 bucket to connect with knowledge base
             embedding_model (str): embedding model to use
         """
-        self.region_name = boto3_session.region_name
-        self.iam_client = boto3_session.client('iam')
-        self.account_number = boto3.client('sts').get_caller_identity().get('Account')
+        self.region_name = self.boto3_session.region_name
+        self.iam_client = self.boto3_session.client('iam')
+        self.account_number = self.boto3_session.client('sts').get_caller_identity().get('Account')
         self.suffix = str(self.account_number)[:4]
-        self.identity = boto3.client('sts').get_caller_identity()['Arn']
-        self.aoss_client = boto3_session.client('opensearchserverless')
-        self.s3_client = boto3.client('s3')
-        self.bedrock_agent_client = boto3.client('bedrock-agent')
-        credentials = boto3.Session().get_credentials()
+        self.identity = self.boto3_session.client('sts').get_caller_identity()['Arn']
+        self.aoss_client = self.boto3_session.client('opensearchserverless')
+        self.s3_client = self.boto3_session.client('s3')
+        self.bedrock_agent_client = self.boto3_session.client('bedrock-agent')
+        credentials = self.boto3_session.get_credentials()
         self.awsauth = AWSV4SignerAuth(credentials, self.region_name, 'aoss')
 
         self.kb_name = kb_name
