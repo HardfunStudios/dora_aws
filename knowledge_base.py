@@ -36,11 +36,11 @@ class BedrockKnowledgeBase:
     def __init__(
             self,
             kb_name,
+            boto3_session,
+            courseid,
             kb_description=None,
             data_bucket_name=None,
             embedding_model="amazon.titan-embed-text-v1",
-            boto3_session = boto3.session.Session(),
-            courseid=None
     ):
         """
         Class initializer
@@ -50,15 +50,15 @@ class BedrockKnowledgeBase:
             data_bucket_name (str): name of s3 bucket to connect with knowledge base
             embedding_model (str): embedding model to use
         """
-        self.region_name = self.boto3_session.region_name
-        self.iam_client = self.boto3_session.client('iam')
-        self.account_number = self.boto3_session.client('sts').get_caller_identity().get('Account')
+        self.region_name = boto3_session.region_name
+        self.iam_client = boto3_session.client('iam')
+        self.account_number = boto3_session.client('sts').get_caller_identity().get('Account')
         self.suffix = str(self.account_number)[:4]
-        self.identity = self.boto3_session.client('sts').get_caller_identity()['Arn']
-        self.aoss_client = self.boto3_session.client('opensearchserverless')
-        self.s3_client = self.boto3_session.client('s3')
-        self.bedrock_agent_client = self.boto3_session.client('bedrock-agent')
-        credentials = self.boto3_session.get_credentials()
+        self.identity = boto3_session.client('sts').get_caller_identity()['Arn']
+        self.aoss_client = boto3_session.client('opensearchserverless')
+        self.s3_client = boto3_session.client('s3')
+        self.bedrock_agent_client = boto3_session.client('bedrock-agent')
+        credentials = boto3_session.get_credentials()
         self.awsauth = AWSV4SignerAuth(credentials, self.region_name, 'aoss')
 
         self.kb_name = kb_name
@@ -71,16 +71,16 @@ class BedrockKnowledgeBase:
             valid_embeddings_str = str(valid_embedding_models)
             raise ValueError(f"Invalid embedding model. Your embedding model should be one of {valid_embeddings_str}")
         self.embedding_model = embedding_model
-        self.encryption_policy_name = f"dora-course-{self.courseid}-{self.suffix}"
-        self.network_policy_name = f"dora-course-{self.courseid}-{self.suffix}"
-        self.access_policy_name = f'dora-course-{self.courseid}-{self.suffix}'
+        self.encryption_policy_name = f"dora-course-{courseid}-{self.suffix}"
+        self.network_policy_name = f"dora-course-{courseid}-{self.suffix}"
+        self.access_policy_name = f'dora-course-{courseid}-{self.suffix}'
         self.kb_execution_role_name = f'AmazonBedrockExecutionRoleForKnowledgeBase_{self.suffix}'
         self.fm_policy_name = f'AmazonBedrockFoundationModelPolicyForKnowledgeBase_{self.suffix}'
         self.s3_policy_name = f'AmazonBedrockS3PolicyForKnowledgeBase_{self.suffix}'
         self.oss_policy_name = f'AmazonBedrockOSSPolicyForKnowledgeBase_{self.suffix}'
 
-        self.vector_store_name = f'dora-course-{self.courseid}-{self.suffix}'
-        self.index_name = f"dora-course-{self.courseid}-{self.suffix}"
+        self.vector_store_name = f'dora-course-{courseid}-{self.suffix}'
+        self.index_name = f"dora-course-{courseid}-{self.suffix}"
     
     def setup_knowledge_base(self):
         print("========================================================================================")
@@ -131,7 +131,7 @@ class BedrockKnowledgeBase:
                     CreateBucketConfiguration={'LocationConstraint': self.region_name}
                 )
     def upload_data_to_s3(self, content, file_name, file_extension):
-        s3 = self.boto3_session.resource('s3')
+        s3 = boto3_session.resource('s3')
         if s3.Bucket(self.bucket_name) not in s3.buckets.all():
             s3.create_bucket(Bucket=self.bucket_name)
             
