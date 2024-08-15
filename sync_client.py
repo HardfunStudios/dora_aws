@@ -208,7 +208,7 @@ class SyncClient:
                         "embeddingModelArn": embeddingModelArn,
                         'embeddingModelConfiguration': {
                             'bedrockEmbeddingModelConfiguration': {
-                                'dimensions': 1536
+                                'dimensions': 1024
                             }
                         }
                     }
