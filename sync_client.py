@@ -110,9 +110,7 @@ class SyncClient:
         try:
             body_json = {
                 "settings": {
-                    "index.knn": "true",
-                    "number_of_shards": 1,
-                    "knn.algo_param.ef_search": 512,
+                    "index.knn": "true"
                 },
                 "mappings": {
                     "properties": {
@@ -191,7 +189,7 @@ class SyncClient:
             "bucketArn": f"arn:aws:s3:::{self.bucket_name}",
         }
         print(s3Configuration)
-        embeddingModelArn = f"arn:aws:bedrock:us-east-1::foundation-model/amazon.titan-embed-text-v1"
+        embeddingModelArn = f"arn:aws:bedrock:us-east-1::foundation-model/amazon.titan-embed-text-v2:0"
 
         name = f"bedrock-knowledge-base-{self.suffix}"
         description = "Amazon shareholder letter knowledge base."
