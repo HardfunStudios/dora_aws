@@ -58,9 +58,7 @@ def sync_content():
                 kb_name=knowledge_base_name,
                 kb_description=knowledge_base_description,
                 data_bucket_name=bucket_name,
-                boto3_session=boto3_session,
-                boto3_client=bedrock_agent_client,
-                
+                boto3_session=boto3_session,                
                 courseid=course_id
             )
         if not data:
