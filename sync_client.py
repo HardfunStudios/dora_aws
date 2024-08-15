@@ -191,7 +191,7 @@ class SyncClient:
             "bucketArn": f"arn:aws:s3:::{self.bucket_name}",
         }
         print(s3Configuration)
-        embeddingModelArn = f"arn:aws:bedrock:us-east-1::foundation-model/amazon.titan-embed-text-v2:0"
+        embeddingModelArn = f"arn:aws:bedrock:us-east-1::foundation-model/amazon.titan-embed-text-v1"
 
         name = f"bedrock-knowledge-base-{self.suffix}"
         description = "Amazon shareholder letter knowledge base."
@@ -209,7 +209,7 @@ class SyncClient:
                         "embeddingModelArn": embeddingModelArn,
                         'embeddingModelConfiguration': {
                             'bedrockEmbeddingModelConfiguration': {
-                                'dimensions': 1024
+                                'dimensions': 1536
                             }
                         }
                     }
