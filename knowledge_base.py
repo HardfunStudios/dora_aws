@@ -51,16 +51,17 @@ class BedrockKnowledgeBase:
             data_bucket_name (str): name of s3 bucket to connect with knowledge base
             embedding_model (str): embedding model to use
         """
+        self.boto3_session = boto3_session
         self.knowledgeBaseId = kb_id
-        self.region_name = boto3_session.region_name
-        self.iam_client = boto3_session.client('iam')
-        self.account_number = boto3_session.client('sts').get_caller_identity().get('Account')
+        self.region_name = self.boto3_session.region_name
+        self.iam_client = self.boto3_session.client('iam')
+        self.account_number = self.boto3_session.client('sts').get_caller_identity().get('Account')
         self.suffix = str(self.account_number)[:4]
-        self.identity = boto3_session.client('sts').get_caller_identity()['Arn']
-        self.aoss_client = boto3_session.client('opensearchserverless')
-        self.s3_client = boto3_session.client('s3')
-        self.bedrock_agent_client = boto3_session.client('bedrock-agent')
-        credentials = boto3_session.get_credentials()
+        self.identity = self.boto3_session.client('sts').get_caller_identity()['Arn']
+        self.aoss_client = self.boto3_session.client('opensearchserverless')
+        self.s3_client = self.boto3_session.client('s3')
+        self.bedrock_agent_client = self.boto3_session.client('bedrock-agent')
+        credentials = self.boto3_session.get_credentials()
         self.awsauth = AWSV4SignerAuth(credentials, self.region_name, 'aoss')
 
         self.kb_name = kb_name
@@ -133,7 +134,7 @@ class BedrockKnowledgeBase:
                     CreateBucketConfiguration={'LocationConstraint': self.region_name}
                 )
     def upload_data_to_s3(self, content, file_name, file_extension):
-        s3 = boto3_session.resource('s3')
+        s3 = self.boto3_session.resource('s3')
         if s3.Bucket(self.bucket_name) not in s3.buckets.all():
             s3.create_bucket(Bucket=self.bucket_name)
             
