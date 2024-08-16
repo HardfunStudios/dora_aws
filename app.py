@@ -64,8 +64,8 @@ def sync_content():
                 boto3_session=boto3_session,                
                 courseid=course_id
             )
+        knowledge_base.setup_knowledge_base() 
         if not data:
-           knowledge_base.setup_knowledge_base() 
            bedrock_agent_client.associate_agent_knowledge_base(
                 agentId=agent_data['agent_id'],
                 agentVersion='DRAFT',
@@ -73,7 +73,6 @@ def sync_content():
                 knowledgeBaseId=knowledge_base.knowledgeBaseId,
                 knowledgeBaseState='ENABLED'
             )
-        
         knowledge_base.upload_data_to_s3(content=course_content, file_name=str(course_id), file_extension='.txt')
         knowledge_base.upload_data_to_s3(content=json.dumps(metadata), file_name=f"{course_id}.metadata", file_extension='.json')
         knowledge_base.start_ingestion_job()
