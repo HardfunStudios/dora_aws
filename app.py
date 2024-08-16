@@ -80,7 +80,7 @@ def sync_content():
         )
         time.sleep(30)
         response = bedrock_agent_client.create_agent_alias(
-            agentAliasName="{self.course_id}-alias",
+            agentAliasName="DRAFT",
             agentId=agent_data['agent_id'],
             description='Course alias',
         )
