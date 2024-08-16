@@ -67,7 +67,7 @@ def sync_content():
            bedrock_agent_client.associate_agent_knowledge_base(
                 agentId=agent_data['agent_id'],
                 agentVersion='DRAFT',
-                description='Access knowledge base when user is on course_id {course_id}',
+                description=f'Access knowledge base when user is on course_id {course_id}',
                 knowledgeBaseId=knowledge_base.knowledgeBaseId,
                 knowledgeBaseState='ENABLED'
             )
