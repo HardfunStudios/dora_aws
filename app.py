@@ -73,14 +73,14 @@ def sync_content():
             )
         
         knowledge_base.upload_data_to_s3(content=course_content, file_name=str(course_id), file_extension='.txt')
-        knowledge_base.upload_data_to_s3(content=json.dumps(metadata), file_name="{course_id}.metadata", file_extension='.json')
+        knowledge_base.upload_data_to_s3(content=json.dumps(metadata), file_name=f"{course_id}.metadata", file_extension='.json')
         knowledge_base.start_ingestion_job()
         bedrock_agent_client.prepare_agent(
             agentId=agent_data['agent_id']
         )
         time.sleep(30)
         response = bedrock_agent_client.create_agent_alias(
-            agentAliasName="{self.course_id}-alias",
+            agentAliasName=f"{course_id}-alias",
             agentId=agent_data['agent_id'],
             description='Course alias',
         )

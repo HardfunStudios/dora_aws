@@ -142,8 +142,8 @@ class BedrockKnowledgeBase:
             content = json.dumps(content) if isinstance(content, dict) else content
             tmp.write(content)
             temp_file_path = tmp.name
-
-        self.s3_client.upload_file(temp_file_path, self.bucket_name, os.path.basename(temp_file_path))
+        s3_file_name = f"{file_name}{file_extension}"
+        self.s3_client.upload_file(temp_file_path, self.bucket_name, s3_file_name)
 
         os.remove(temp_file_path)  
         
