@@ -10,6 +10,7 @@ import botocore
 import traceback
 from knowledge_base import BedrockKnowledgeBase
 import time
+import hashlib
 
 config = botocore.config.Config(
     read_timeout=1000,
@@ -79,8 +80,10 @@ def sync_content():
             agentId=agent_data['agent_id']
         )
         time.sleep(30)
+        hash_object = hashlib.md5(course_id.encode())
+        hash_hex = hash_object.hexdigest()
         response = bedrock_agent_client.create_agent_alias(
-            agentAliasName=f"{course_id}-alias",
+            agentAliasName=f"alias-{hash_hex}",
             agentId=agent_data['agent_id'],
             description='Course alias',
         )
