@@ -343,7 +343,8 @@ class BedrockKnowledgeBase:
                                         'aoss:CreateCollectionItems',
                                         'aoss:DeleteCollectionItems',
                                         'aoss:UpdateCollectionItems',
-                                        'aoss:DescribeCollectionItems'],
+                                        'aoss:DescribeCollectionItems',
+                                        "aoss:APIAccessAll"],
                                     'ResourceType': 'collection'
                                 },
                                 {
@@ -354,7 +355,8 @@ class BedrockKnowledgeBase:
                                         'aoss:UpdateIndex',
                                         'aoss:DescribeIndex',
                                         'aoss:ReadDocument',
-                                        'aoss:WriteDocument'],
+                                        'aoss:WriteDocument',
+                                        "aoss:APIAccessAll"],
                                     'ResourceType': 'index'
                                 }],
                             'Principal': [self.identity, self.bedrock_kb_execution_role['Role']['Arn']],
