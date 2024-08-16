@@ -72,8 +72,8 @@ def sync_content():
                 knowledgeBaseState='ENABLED'
             )
         
-        knowledge_base.upload_data_to_s3(content=course_content, file_name=course_id, file_extension='.txt')
-        knowledge_base.upload_data_to_s3(content=json.dump(metadata), file_name=course_id, file_extension='.json')
+        knowledge_base.upload_data_to_s3(content=course_content, file_name=str(course_id), file_extension='.txt')
+        knowledge_base.upload_data_to_s3(content=json.dump(metadata), file_name="{course_id}.metadata", file_extension='.json')
         knowledge_base.start_ingestion_job()
         bedrock_agent_client.prepare_agent(
             agentId=agent_data['agent_id']
