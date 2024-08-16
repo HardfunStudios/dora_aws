@@ -66,7 +66,7 @@ def sync_content():
            knowledge_base.setup_knowledge_base() 
            bedrock_agent_client.associate_agent_knowledge_base(
                 agentId=agent_data['agent_id'],
-                agentVersion='DRAFT',
+                agentVersion='Version 1',
                 description='Access the knowledge base when customers ask about the plates in the menu.',
                 knowledgeBaseId=knowledge_base.knowledgeBaseId,
                 knowledgeBaseState='ENABLED'
@@ -80,9 +80,9 @@ def sync_content():
         )
         time.sleep(30)
         response = bedrock_agent_client.create_agent_alias(
-            agentAliasName='TestAlias',
+            agentAliasName="{self.course_id}-alias",
             agentId=agent_data['agent_id'],
-            description='Test alias',
+            description='Course alias',
         )
 
         alias_id = response["agentAlias"]["agentAliasId"]
