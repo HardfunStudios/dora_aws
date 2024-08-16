@@ -10,7 +10,8 @@ import botocore
 import traceback
 from knowledge_base import BedrockKnowledgeBase
 import time
-import hashlib
+import random
+import string
 
 config = botocore.config.Config(
     read_timeout=1000,
@@ -80,10 +81,9 @@ def sync_content():
             agentId=agent_data['agent_id']
         )
         time.sleep(30)
-        hash_object = hashlib.md5(str(course_id).encode())
-        hash_hex = hash_object.hexdigest()
+        random_string = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
         response = bedrock_agent_client.create_agent_alias(
-            agentAliasName=f"alias-{hash_hex}",
+            agentAliasName=f"alias-{random_string}",
             agentId=agent_data['agent_id'],
             description='Course alias',
         )
