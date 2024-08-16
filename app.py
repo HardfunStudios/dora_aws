@@ -67,13 +67,13 @@ def sync_content():
            bedrock_agent_client.associate_agent_knowledge_base(
                 agentId=agent_data['agent_id'],
                 agentVersion='DRAFT',
-                description='Access the knowledge base when customers ask about the plates in the menu.',
+                description='Access knowledge base when user is on course_id {course_id}',
                 knowledgeBaseId=knowledge_base.knowledgeBaseId,
                 knowledgeBaseState='ENABLED'
             )
         
         knowledge_base.upload_data_to_s3(content=course_content, file_name=str(course_id), file_extension='.txt')
-        knowledge_base.upload_data_to_s3(content=json.dump(metadata), file_name="{course_id}.metadata", file_extension='.json')
+        knowledge_base.upload_data_to_s3(content=json.dumps(metadata), file_name="{course_id}.metadata", file_extension='.json')
         knowledge_base.start_ingestion_job()
         bedrock_agent_client.prepare_agent(
             agentId=agent_data['agent_id']
