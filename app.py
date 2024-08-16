@@ -80,7 +80,7 @@ def sync_content():
             agentId=agent_data['agent_id']
         )
         time.sleep(30)
-        hash_object = hashlib.md5(course_id.encode())
+        hash_object = hashlib.md5(str(course_id).encode())
         hash_hex = hash_object.hexdigest()
         response = bedrock_agent_client.create_agent_alias(
             agentAliasName=f"alias-{hash_hex}",
