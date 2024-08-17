@@ -37,7 +37,6 @@ class BedrockKnowledgeBase:
             self,
             kb_name,
             boto3_session,
-            courseid,
             kb_id,
             kb_description=None,
             data_bucket_name=None,

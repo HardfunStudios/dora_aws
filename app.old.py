@@ -47,34 +47,48 @@ def sync_content():
     print("entrou no sync")
     
     try:    
-        aws_data = request.json['aws_data']
-        course_data = request.json['course_data']
+        course_id = request.json['course_id']
+        course_content = request.json['course_content']
+        data = request.json['data']
+        metadata = request.json['metadata']
+        agent_data = request.json['agent_data']
         
         bucket_name = f"course-bot-{postfix}-{course_id}" 
         knowledge_base_name = f"course-bot-{postfix}-{course_id}"
+        knowledge_base_description = f"Course bot for course {course_id}"
         knowledge_base = BedrockKnowledgeBase(
-                kb_id=aws_data['kb_id'],
-                data_bucket_name=aws_data['bucket_name'],
-                boto3_session=boto3_session                
+                kb_id=data if data else None,
+                kb_name=knowledge_base_name,
+                kb_description=knowledge_base_description,
+                data_bucket_name=bucket_name,
+                boto3_session=boto3_session,                
+                courseid=course_id
             )
         knowledge_base.setup_knowledge_base() 
-        course_metadata = {'metadataAttributes': course_data }
-        knowledge_base.upload_data_to_s3(content=json.dumps(course_data), file_name=str(course_data['course_id']), file_extension='.json')
-        knowledge_base.upload_data_to_s3(content=json.dumps(course_metadata), file_name=f"{course_data['course_id']}.json.metadata", file_extension='.json')
+        if not data:
+           bedrock_agent_client.associate_agent_knowledge_base(
+                agentId=agent_data['agent_id'],
+                agentVersion='DRAFT',
+                description=f'Access knowledge base when user is on course_id {course_id}',
+                knowledgeBaseId=knowledge_base.knowledgeBaseId,
+                knowledgeBaseState='ENABLED'
+            )
+        knowledge_base.upload_data_to_s3(content=course_content, file_name=str(course_id), file_extension='.txt')
+        knowledge_base.upload_data_to_s3(content=json.dumps(metadata), file_name=f"{course_id}.metadata", file_extension='.json')
         knowledge_base.start_ingestion_job()
         bedrock_agent_client.prepare_agent(
-            agentId=aws_data['agent_id']
+            agentId=agent_data['agent_id']
         )
         time.sleep(30)
         random_string = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
         response = bedrock_agent_client.create_agent_alias(
             agentAliasName=f"alias-{random_string}",
-            agentId=aws_data['agent_id'],
-            description='Alias',
+            agentId=agent_data['agent_id'],
+            description='Course alias',
         )
 
         alias_id = response["agentAlias"]["agentAliasId"]
-        response = {'msg': 'Bot content updated', 'alias_id': alias_id}   
+        response = {'msg': 'Course bot created successfully', 'alias_id': alias_id, 'kb_name': knowledge_base_name}   
         return response, 200
     except Exception as e:
         error_message = traceback.format_exc()
