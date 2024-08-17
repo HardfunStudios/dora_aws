@@ -35,9 +35,9 @@ class BedrockKnowledgeBase:
     """
     def __init__(
             self,
-            kb_name,
             boto3_session,
             kb_id,
+            kb_name=None,
             kb_description=None,
             data_bucket_name=None,
             embedding_model="amazon.titan-embed-text-v1",
