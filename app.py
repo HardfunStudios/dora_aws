@@ -33,10 +33,10 @@ CONTEXTS = {
 }
 
 COURSE = {
-    "en": "Consider the course_id {}.",
-    "es": "Considera el course_id {}.",
-    "pt_br": "Considere o course_id {}.",
-    "fr": "Considérez le course_id {}."
+    "en": "Consider course_id={}.",
+    "es": "Considera course_id={}.",
+    "pt_br": "Considere course_id={}.",
+    "fr": "Considérez course_id={}."
 }
 
 ROLE_NAMES = {
