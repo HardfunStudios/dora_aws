@@ -40,6 +40,7 @@ class BedrockKnowledgeBase:
             kb_name=None,
             kb_description=None,
             data_bucket_name=None,
+            courseid=None,
             embedding_model="amazon.titan-embed-text-v1",
     ):
         """

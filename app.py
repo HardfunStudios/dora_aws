@@ -53,7 +53,8 @@ def sync_content():
                 kb_id=aws_data['kb_id'],
                 kb_name=aws_data['kb_name'],
                 data_bucket_name=aws_data['bucket_name'],
-                boto3_session=boto3_session                
+                boto3_session=boto3_session,
+                courseid=course_data['course_id']               
             )
         knowledge_base.setup_knowledge_base() 
         course_metadata = {'metadataAttributes': course_data }
