@@ -33,7 +33,7 @@ LAMBDA_FUNCTIONS = [
 
 class BotClient:
     def __init__(
-        self, bedrock_agent_client, runtime_client, lambda_client, iam_resource, iam_client, postfix, agent_data
+        self, bedrock_agent_client, runtime_client, lambda_client, iam_resource, iam_client, agent_data, postfix=None
     ):
         self.iam_resource = iam_resource
         self.lambda_client = lambda_client
@@ -46,13 +46,12 @@ class BotClient:
         self.lambda_functions = {}
 
         self.bedrock_wrapper = BedrockAgentWrapper(bedrock_agent_client)
-        print(agent_data)    
         self.agent = self.bedrock_wrapper.get_agent(agent_id=agent_data['agent_id'])
         self.agent_alias = self.bedrock_agent_client.get_agent_alias(agentId=agent_data['agent_id'], agentAliasId=agent_data['agent_alias'])["agentAlias"]
         self.agent_role = self.iam_client.get_role(RoleName=agent_data['agent_role'])
-        for function in LAMBDA_FUNCTIONS:
-            self.lambda_roles[function['name']] = self.iam_client.get_role(RoleName=agent_data['lambda']['roles'][function['name']])
-            self.lambda_functions[function['name']] = self.lambda_client.get_function(FunctionName=agent_data['lambda']['functions'][function['name']])
+        #for function in LAMBDA_FUNCTIONS:
+        #    self.lambda_roles[function['name']] = self.iam_client.get_role(RoleName=agent_data['lambda']['roles'][function['name']])
+        #    self.lambda_functions[function['name']] = self.lambda_client.get_function(FunctionName=agent_data['lambda']['functions'][function['name']])
 
     def create_course_bot(self, course_id):
         name = f"course_bot_{course_id}"
@@ -338,7 +337,7 @@ class BotClient:
     async def _invoke_agent(self, agent_alias, prompt, session_id):
         response = self.bedrock_agent_runtime_client.invoke_agent(
             agentId=self.agent["agentId"],
-            agentAliasId=agent_alias["agentAliasId"],
+            agentAliasId=agent_alias,
             sessionId=session_id,
             inputText=prompt,
         )
@@ -349,7 +348,7 @@ class BotClient:
             chunk = event["chunk"]
             completion += chunk["bytes"].decode()
 
-        return completion
+        return completion, 200
 
     def _delete_resources(self):
         if self.agent:
