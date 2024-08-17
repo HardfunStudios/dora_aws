@@ -49,9 +49,6 @@ def sync_content():
     try:    
         aws_data = request.json['aws_data']
         course_data = request.json['course_data']
-        
-        bucket_name = f"course-bot-{postfix}-{course_id}" 
-        knowledge_base_name = f"course-bot-{postfix}-{course_id}"
         knowledge_base = BedrockKnowledgeBase(
                 kb_id=aws_data['kb_id'],
                 data_bucket_name=aws_data['bucket_name'],
