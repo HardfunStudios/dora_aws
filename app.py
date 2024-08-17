@@ -121,7 +121,7 @@ boto3_session = boto3.session.Session(
 )
 
 bedrock_agent_client = boto3_session.client('bedrock-agent', config=config)
-bedrock_runtime_agent_client = boto3_session.client('bedrock-runtime', config=config)
+bedrock_runtime_agent_client = boto3_session.client('bedrock-agent-client', config=config)
 runtime_client = boto3_session.client('bedrock-agent-runtime', config=config)
 lambda_client = boto3_session.client('lambda', config=config)
 iam_resource = boto3_session.resource('iam')
