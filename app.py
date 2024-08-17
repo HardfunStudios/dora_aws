@@ -187,7 +187,7 @@ def sync_content():
                 boto3_session=boto3_session,
                 courseid=course_data['course_id']               
             )
-        #knowledge_base.setup_knowledge_base() 
+        knowledge_base.setup_knowledge_base() 
         course_metadata = {'metadataAttributes': course_data }
         knowledge_base.upload_data_to_s3(content=json.dumps(course_data), file_name=str(course_data['course_id']), file_extension='.json')
         knowledge_base.upload_data_to_s3(content=json.dumps(course_metadata), file_name=f"{course_data['course_id']}.json.metadata", file_extension='.json')
