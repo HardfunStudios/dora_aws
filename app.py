@@ -121,6 +121,7 @@ boto3_session = boto3.session.Session(
 )
 
 bedrock_agent_client = boto3_session.client('bedrock-agent', config=config)
+bedrock_runtime_agent_client = boto3_session.client('bedrock-runtime', config=config)
 runtime_client = boto3_session.client('bedrock-agent-runtime', config=config)
 lambda_client = boto3_session.client('lambda', config=config)
 iam_resource = boto3_session.resource('iam')
@@ -146,7 +147,7 @@ def send_message(message, agent_attributes, prompt_attributes, session_attribute
     
     prompt = prompt + COURSE[locale].format(course)
         
-    response = bedrock_agent_client.invoke_agent(
+    response = bedrock_runtime_agent_client.invoke_agent(
         agentId=agent_attributes['agent_id'],
         agentAliasId=agent_attributes['agent_alias_id'],
         sessionId=session_id,
