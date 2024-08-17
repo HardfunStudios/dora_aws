@@ -52,6 +52,7 @@ def sync_content():
         knowledge_base = BedrockKnowledgeBase(
                 kb_id=aws_data['kb_id'],
                 kb_name=aws_data['kb_name'],
+                kb_description="knoledge base",
                 data_bucket_name=aws_data['bucket_name'],
                 boto3_session=boto3_session,
                 courseid=course_data['course_id']               
