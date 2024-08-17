@@ -107,8 +107,8 @@ def delete_course():
 def get_response():
     session_id = request.json['session_id']
     message = request.json['msg']
-    session_attributes = request.json['session_attributes']
-    prompt_attributes = request.json['prompt_attributes']
+    session_attributes = request.json['session_parameters']
+    prompt_attributes = request.json['prompt_parameters']
     agent_settings = request.json['agent_settings']
     
     bot_client = BotClient()
