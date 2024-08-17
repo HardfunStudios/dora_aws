@@ -33,10 +33,10 @@ CONTEXTS = {
 }
 
 COURSE = {
-    "en": "Consider that I am enrolled in the course with {}.",
-    "es": "Considera que estoy inscrito en el curso con id {}.",
-    "pt_br": "Considere que estou matriculado no curso com id {}.",
-    "fr": "Considérez que je suis inscrit aux cours avec id {}."
+    "en": "Consider the course_id {}.",
+    "es": "Considera el course_id {}.",
+    "pt_br": "Considere o course_id {}.",
+    "fr": "Considérez le course_id {}."
 }
 
 ROLE_NAMES = {
@@ -135,17 +135,22 @@ def send_message(message, agent_attributes, prompt_attributes, session_attribute
     message = message
     username = session_attributes['username']
     firstname = session_attributes['firstname']
-    roles = prompt_attributes['roles']    
-    roles_string = ', '.join(roles)
     course = prompt_attributes['course_id']
     locale = prompt_attributes['locale']
+    roles = prompt_attributes['roles']    
+    roles_string = ', '.join(roles)
+
+    
+    prompt = ""
 
     if(username == ""):
-        prompt = message + CONTEXTS[locale]["not-logged"]
+        prompt = prompt + CONTEXTS[locale]["not-logged"]
     else:
-        prompt = message + CONTEXTS[locale]["logged"].format(roles_string, username, firstname)
+        prompt = prompt + CONTEXTS[locale]["logged"].format(roles_string, username, firstname)
     
     prompt = prompt + COURSE[locale].format(course)
+    
+    prompt = prompt + message
         
     response = bedrock_runtime_agent_client.invoke_agent(
         agentId=agent_attributes['agent_id'],
