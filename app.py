@@ -160,8 +160,7 @@ def send_message(message, agent_attributes, prompt_attributes, session_attribute
         chunk = event["chunk"]
         completion += chunk["bytes"].decode()
 
-    response = {'msg': completion}
-    return response, 200
+    return completion
 
 
 app = Flask(__name__)
