@@ -15,28 +15,28 @@ import string
 
 CONTEXTS = {
     "en": {
-        "not-logged": ". Consider that I am not logged in.",
+        "not-logged": "Consider that I am not logged in.",
         "logged": ". Consider that my roles in the Profuturo platform are {}, I'm logged in, my username is {} and my first name is {}."
     },
     "es": {
-        "not-logged": ". Considera que no estoy conectado.",
+        "not-logged": "Considera que no estoy conectado.",
         "logged": ". Considera que mis roles en la plataforma Profuturo son {}, estoy conectado, mi nombre de usuario es {} y mi nombre es {}."
     },
     "pt_br": {
-        "not-logged": ". Considere que não estou conectado.",
+        "not-logged": "Considere que não estou conectado.",
         "logged": ". Considere que meus papéis na plataforma Profuturo são {}, estou conectado, meu nome de usuário é {} e meu primeiro nome é {}."
     },
     "fr": {
-        "not-logged": ". Considérez que je ne suis pas connecté.",
-        "logged": ". Considérez que mes rôles dans la plateforme Profuturo sont {}, je suis connecté, mon nom d'utilisateur est {} et mon prénom est {}."
+        "not-logged": "Considérez que je ne suis pas connecté.",
+        "logged": "Considérez que mes rôles dans la plateforme Profuturo sont {}, je suis connecté, mon nom d'utilisateur est {} et mon prénom est {}."
     },
 }
 
 COURSE = {
-    "en": "Consider course_id={}.",
-    "es": "Considera course_id={}.",
-    "pt_br": "Considere course_id={}.",
-    "fr": "Considérez course_id={}."
+    "en": " Consider course_id={}. ",
+    "es": " Considera course_id={}. ",
+    "pt_br": " Considere course_id={}. ",
+    "fr": " Considérez course_id={}. "
 }
 
 ROLE_NAMES = {
