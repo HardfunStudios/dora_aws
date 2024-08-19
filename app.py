@@ -155,15 +155,15 @@ def send_message(message, agent_attributes, prompt_attributes, session_attribute
             {
                 'knowledgeBaseId': prompt_attributes['kb_id']
             }
-        ]
+        ],
+        'sessionAttribute': json.dumps(session_attributes)
     }
     response = bedrock_runtime_agent_client.invoke_agent(
         agentId=agent_attributes['agent_id'],
         agentAliasId=agent_attributes['agent_alias_id'],
         sessionId=session_id,
         inputText=message,
-        sessionState=session,
-        sessionAttributes=json.dumps(session_attributes)
+        sessionState=session
     )
     
     completion = ""
