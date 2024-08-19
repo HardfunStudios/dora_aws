@@ -137,24 +137,33 @@ def send_message(message, agent_attributes, prompt_attributes, session_attribute
     firstname = session_attributes['firstname']
     course = prompt_attributes['course_id']
     locale = prompt_attributes['locale']
-    roles = prompt_attributes['roles']    
+    roles = prompt_attributes['roles']  
+    kb_id = prompt_attributes['kb_id']  
     roles_string = ', '.join(roles)
 
     
-    prompt = ""
+    #prompt = ""
 
     # if(username == ""):
     #     prompt = prompt + CONTEXTS[locale]["not-logged"]
     # else:
     #     prompt = prompt + CONTEXTS[locale]["logged"].format(roles_string, username, firstname)
-    prompt = f"course_id={course} username={username} firstname={firstname}."
-    prompt = prompt + message
+    #prompt = prompt + message
         
+    session = {
+        'knowledgeBaseConfigurations': [
+            {
+                'knowledgeBaseId': prompt_attributes['kb_id']
+            }
+        ]
+    }
     response = bedrock_runtime_agent_client.invoke_agent(
         agentId=agent_attributes['agent_id'],
         agentAliasId=agent_attributes['agent_alias_id'],
         sessionId=session_id,
-        inputText=prompt
+        inputText=message,
+        sessionState=session,
+        sessionAttributes=json.dumps(session_attributes)
     )
     
     completion = ""
@@ -206,7 +215,7 @@ def sync_content():
         )
 
         alias_id = response["agentAlias"]["agentAliasId"]
-        response = {'msg': 'Bot content updated', 'alias_id': alias_id}   
+        response = {'msg': 'Bot content updated', 'alias_id': alias_id, 'kb_id': knowledge_base.knowledgeBaseId}   
         return response, 200
     except Exception as e:
         error_message = traceback.format_exc()
