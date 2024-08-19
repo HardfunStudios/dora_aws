@@ -153,7 +153,12 @@ def send_message(message, agent_attributes, prompt_attributes, session_attribute
     session = {
         'knowledgeBaseConfigurations': [
             {
-                'knowledgeBaseId': prompt_attributes['kb_id']
+                'knowledgeBaseId': prompt_attributes['kb_id'],
+                'retrievalConfiguration': {
+                    'vectorSearchConfiguration': {
+                        'numberOfResults': 5
+                    }
+                }
             }
         ],
         'sessionAttributes': session_attributes
