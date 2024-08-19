@@ -143,13 +143,11 @@ def send_message(message, agent_attributes, prompt_attributes, session_attribute
     
     prompt = ""
 
-    if(username == ""):
-        prompt = prompt + CONTEXTS[locale]["not-logged"]
-    else:
-        prompt = prompt + CONTEXTS[locale]["logged"].format(roles_string, username, firstname)
-    
-    prompt = prompt + COURSE[locale].format(course)
-    
+    # if(username == ""):
+    #     prompt = prompt + CONTEXTS[locale]["not-logged"]
+    # else:
+    #     prompt = prompt + CONTEXTS[locale]["logged"].format(roles_string, username, firstname)
+    prompt = f"course_id={course} username={username} firstname={firstname}."
     prompt = prompt + message
         
     response = bedrock_runtime_agent_client.invoke_agent(
