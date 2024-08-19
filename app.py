@@ -161,7 +161,7 @@ def send_message(message, agent_attributes, prompt_attributes, session_attribute
                 }
             }
         ],
-        'sessionAttributes': session_attributes
+        'sessionAttributes': session_attributes.update(prompt_attributes)
     }
     response = bedrock_runtime_agent_client.invoke_agent(
         agentId=agent_attributes['agent_id'],
