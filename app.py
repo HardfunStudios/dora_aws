@@ -13,99 +13,6 @@ import time
 import random
 import string
 
-CONTEXTS = {
-    "en": {
-        "not-logged": "Consider that I am not logged in.",
-        "logged": ". Consider that my roles in the Profuturo platform are {}, I'm logged in, my username is {} and my first name is {}."
-    },
-    "es": {
-        "not-logged": "Considera que no estoy conectado.",
-        "logged": ". Considera que mis roles en la plataforma Profuturo son {}, estoy conectado, mi nombre de usuario es {} y mi nombre es {}."
-    },
-    "pt_br": {
-        "not-logged": "Considere que não estou conectado.",
-        "logged": ". Considere que meus papéis na plataforma Profuturo são {}, estou conectado, meu nome de usuário é {} e meu primeiro nome é {}."
-    },
-    "fr": {
-        "not-logged": "Considérez que je ne suis pas connecté.",
-        "logged": "Considérez que mes rôles dans la plateforme Profuturo sont {}, je suis connecté, mon nom d'utilisateur est {} et mon prénom est {}."
-    },
-}
-
-COURSE = {
-    "en": " Consider course_id={}. ",
-    "es": " Considera course_id={}. ",
-    "pt_br": " Considere course_id={}. ",
-    "fr": " Considérez course_id={}. "
-}
-
-ROLE_NAMES = {
-    "en": {
-        "admin": "Administrator",
-        "manager": "Manager",
-        "coursecreator": "Course creator",
-        "editingteacher": "Teacher",
-        "teacher": "Non-editing teacher",
-        "student": "Student",
-        "guest": "Guest",
-        "user": "Authenticated user",
-        "frontpage": "Authenticated user on frontpage",
-        "pfstudent": "Profuturo Student",
-        "pfteacher": "Profuturo Teacher",
-        "pfcoach": "Profuturo Coach",
-        "countrycoordinator": "Country Coordinator"
-        },
-    "es": {
-        "admin": "Administrador",
-        "manager": "Administrador",
-        "coursecreator": "Creador de cursos",
-        "editingteacher": "Profesor",
-        "teacher": "Profesor sin permisos de edición",
-        "student": "Estudiante",
-        "guest": "Invitado",
-        "user": "Usuario autenticado",
-        "frontpage": "Usuario autenticado en la página de inicio",
-        "pfstudent": "Estudiante Profuturo",
-        "pfteacher": "Profesor Profuturo",
-        "pfcoach": "Coach Profuturo",
-        "countrycoordinator": "Coordinador de país"
-        },  
-    "pt_br": {
-        "admin": "Administrador",
-        "manager": "Gerente",
-        "coursecreator": "Criador de cursos",
-        "editingteacher": "Professor",
-        "teacher": "Professor sem permissões de edição",
-        "student": "Estudante",
-        "guest": "Convidado",
-        "user": "Usuário autenticado",
-        "frontpage": "Usuário autenticado na página inicial",
-        "pfstudent": "Estudante Profuturo",
-        "pfteacher": "Professor Profuturo",
-        "pfcoach": "Coach Profuturo",
-        "countrycoordinator": "Coordenador de país"
-        },
-    "fr": {
-        "admin": "Administrateur",
-        "manager": "Administrateur",
-        "coursecreator": "Créateur de cours",
-        "editingteacher": "Professeur",
-        "teacher": "Professeur sans autorisation d'édition",
-        "student": "Étudiant",
-        "guest": "Invité",
-        "user": "Utilisateur authentifié",
-        "frontpage": "Utilisateur authentifié sur la page d'accueil",
-        "pfstudent": "Étudiant Profuturo",
-        "pfteacher": "Professeur Profuturo",
-        "pfcoach": "Coach Profuturo",
-        "countrycoordinator": "Coordinateur de pays"
-        }
-}  
-
-PROHIBITED = {
-    "pt_br": ["usuário", "administrador", "gerente", "criador de cursos", "professor"],
-}
-
 
 config = botocore.config.Config(
     read_timeout=1000,
@@ -131,26 +38,11 @@ iam_client = boto3_session.client('iam')
 postfix = os.environ['POSTFIX']
 
 def send_message(message, agent_attributes, prompt_attributes, session_attributes, session_id):
-    session_id = session_id
-    message = message
-    username = session_attributes['username']
-    firstname = session_attributes['firstname']
-    course = prompt_attributes['course_id']
-    locale = prompt_attributes['locale']
-    roles = prompt_attributes['roles']  
-    kb_id = prompt_attributes['kb_id']  
-    roles_string = ', '.join(roles)
 
-    
-    #prompt = ""
-
-    # if(username == ""):
-    #     prompt = prompt + CONTEXTS[locale]["not-logged"]
-    # else:
-    #     prompt = prompt + CONTEXTS[locale]["logged"].format(roles_string, username, firstname)
-    #prompt = prompt + message
     merged_attributes = session_attributes.copy()  # Copiar session_attributes para não modificar o original
     merged_attributes.update(prompt_attributes)  # Atualizar com prompt_attributes
+    course = prompt_attributes['course_id']
+    prompt = f"course_id={course}. {message}"
   
     session = {
         'knowledgeBaseConfigurations': [
@@ -170,7 +62,7 @@ def send_message(message, agent_attributes, prompt_attributes, session_attribute
         agentId=agent_attributes['agent_id'],
         agentAliasId=agent_attributes['agent_alias_id'],
         sessionId=session_id,
-        inputText=message,
+        inputText=prompt,
         sessionState=session
     )
     
