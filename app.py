@@ -149,7 +149,9 @@ def send_message(message, agent_attributes, prompt_attributes, session_attribute
     # else:
     #     prompt = prompt + CONTEXTS[locale]["logged"].format(roles_string, username, firstname)
     #prompt = prompt + message
-        
+    merged_attributes = session_attributes.copy()  # Copiar session_attributes para não modificar o original
+    merged_attributes.update(prompt_attributes)  # Atualizar com prompt_attributes
+  
     session = {
         'knowledgeBaseConfigurations': [
             {
@@ -161,8 +163,9 @@ def send_message(message, agent_attributes, prompt_attributes, session_attribute
                 }
             }
         ],
-        'sessionAttributes': session_attributes.update(prompt_attributes)
+        'sessionAttributes': merged_attributes
     }
+    
     response = bedrock_runtime_agent_client.invoke_agent(
         agentId=agent_attributes['agent_id'],
         agentAliasId=agent_attributes['agent_alias_id'],
