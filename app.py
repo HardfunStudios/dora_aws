@@ -43,27 +43,12 @@ def send_message(message, agent_attributes, prompt_attributes, session_attribute
     merged_attributes.update(prompt_attributes)  # Atualizar com prompt_attributes
     course = prompt_attributes['course_id']
     prompt = f"Considere course_id={course}. {message}"
-  
-    session = {
-        'knowledgeBaseConfigurations': [
-            {
-                'knowledgeBaseId': prompt_attributes['kb_id'],
-                'retrievalConfiguration': {
-                    'vectorSearchConfiguration': {
-                        'numberOfResults': 5
-                    }
-                }
-            }
-        ],
-        'promptSessionAttributes': merged_attributes
-    }
     
     response = bedrock_runtime_agent_client.invoke_agent(
         agentId=agent_attributes['agent_id'],
         agentAliasId=agent_attributes['agent_alias_id'],
         sessionId=session_id,
-        inputText=prompt,
-        sessionState=session
+        inputText=prompt
     )
     
     completion = ""
