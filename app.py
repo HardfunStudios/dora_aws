@@ -42,7 +42,7 @@ def send_message(message, agent_attributes, prompt_attributes, session_attribute
     merged_attributes = session_attributes.copy()  # Copiar session_attributes para não modificar o original
     merged_attributes.update(prompt_attributes)  # Atualizar com prompt_attributes
     course = prompt_attributes['course_id']
-    prompt = f"course_id={course}. {message}"
+    prompt = f"Considere course_id={course}. {message}"
   
     session = {
         'knowledgeBaseConfigurations': [
